@@ -83,15 +83,11 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception{
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/sample.fxml"));
         Parent root = loader.load();
+        stage.setTitle("TP FINAL - Taller de Programación Java");
         stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.sizeToScene();
         stage.show();
-        /*
-        Parent root = FXMLLoader.load(this.getClass().getResource("sample.fxml"));
-        window.setTitle("TP FINAL - Taller de Programación Java");
-        window.setScene(new Scene(root));
-        window.setResizable(false);
-        window.sizeToScene();
-        window.show();
-         */
+
     }
 }
