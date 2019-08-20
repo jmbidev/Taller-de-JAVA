@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="713.0" maxWidth="1024.0" minHeight="648.0" minWidth="1008.0" prefHeight="648.0" prefWidth="1008.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cycles.controllers.GuiController">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <children>
+      <Pane layoutX="20.0" layoutY="8.0" prefHeight="322.0" prefWidth="1016.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Button fx:id="button_clearCycleTwoPackages" disable="true" layoutX="570.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#clearCycleTwoPackages">
+               <graphic>
+                  <ImageView fx:id="imageView_clear" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/clear.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="button_searchFile" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#searchFile">
+               <graphic>
+                  <ImageView fx:id="imageView_seacrhFile" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/openFile.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="button_check" disable="true" layoutX="524.0" layoutY="70.0" mnemonicParsing="false" onMouseClicked="#check" text="Verificar">
+               <tooltip>
+                  <Tooltip fx:id="tooltip_check" text="Empty Tooltip" />
+               </tooltip>
+            </Button>
+            <Button fx:id="button_saveCycles" disable="true" layoutY="570.0" mnemonicParsing="false" onMouseClicked="#saveCycles">
+               <graphic>
+                  <ImageView fx:id="imageView_saveCycles" fitHeight="24.0" fitWidth="24.0" onMouseClicked="#saveCycles" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/save.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="button_saveCyclesWithPackages" disable="true" layoutX="524.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#saveCyclesWithPackages">
+               <graphic>
+                  <ImageView fx:id="imageView_saveCyclesTwoPackages" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/save.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="button_seeCycles" disable="true" layoutY="65.0" mnemonicParsing="false" onMouseClicked="#seeCycles" text="Ver Ciclos" />
+            <Button fx:id="button_reset" layoutX="949.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#restart">
+               <graphic>
+                  <ImageView fx:id="imageView_reset" fitHeight="24.0" fitWidth="24.0" onMouseClicked="#restart" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/reset.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <RadioButton fx:id="radioButton_maxLimit" disable="true" layoutX="91.0" layoutY="87.0" mnemonicParsing="false" onMouseClicked="#cycleMaxLimit" text="Límite máximo" />
+            <ComboBox fx:id="comboBox_package1" disable="true" layoutX="631.0" layoutY="83.0" prefWidth="150.0" promptText="Paquete #1" visibleRowCount="15" />
+            <ComboBox fx:id="comboBox_package2" disable="true" layoutX="799.0" layoutY="83.0" prefWidth="150.0" promptText="Paquete #2" visibleRowCount="15" />
+            <Label fx:id="label_bonus" layoutX="621.0" layoutY="61.0" text="¿Existe algún ciclo simple que pase por los siguientes paquetes?" />
+            <Label fx:id="label_selectInvalid" layoutX="511.0" layoutY="41.0" prefHeight="17.0" prefWidth="283.0" textFill="RED" />
+            <TextArea fx:id="textArea_answerCycles" layoutY="113.0" prefHeight="450.0" prefWidth="480.0" />
+            <TextArea fx:id="textArea_answerCyclesTwoPackages" layoutX="524.0" layoutY="113.0" prefHeight="226.0" prefWidth="466.0" />
+            <TextField fx:id="textField_path" editable="false" layoutX="51.0" layoutY="6.0" prefHeight="26.0" prefWidth="883.0" promptText="Ruta Archivo ODEM">
+               <font>
+                  <Font name="Courier New" size="13.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </TextField>
+            <Spinner fx:id="spinner_maxLimit" disable="true" layoutX="197.0" layoutY="83.0" prefHeight="25.0" prefWidth="84.0" />
+            <ImageView fx:id="imageView_tp" fitHeight="52.0" fitWidth="223.0" layoutX="781.0" layoutY="569.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/tallerJava.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="label_names" layoutX="823.0" layoutY="618.0" text="Jeremías Brisuela | Noelia Fluxá" />
+            <RadioButton fx:id="radioButton_exactLimit" disable="true" layoutX="91.0" layoutY="57.0" mnemonicParsing="false" onMouseClicked="#cycleExactLimit" selected="true" text="Límite exacto" />
+            <Spinner fx:id="spinner_exactLimit" disable="true" layoutX="197.0" layoutY="53.0" prefHeight="25.0" prefWidth="84.0" />
+            <TextField fx:id="time_tarjan" alignment="CENTER" editable="false" layoutX="395.0" layoutY="573.0" prefHeight="25.0" prefWidth="84.0" />
+            <TextField fx:id="count_nodes" alignment="CENTER" editable="false" layoutX="61.0" layoutY="572.0" prefHeight="25.0" prefWidth="84.0" />
+            <TextField fx:id="count_edged" alignment="CENTER" editable="false" layoutX="167.0" layoutY="573.0" prefHeight="25.0" prefWidth="84.0" />
+            <TextField fx:id="count_cycles" alignment="CENTER" editable="false" layoutX="282.0" layoutY="573.0" prefHeight="25.0" prefWidth="84.0" />
+            <TextField fx:id="count_cyclesWithPackages" alignment="CENTER" editable="false" layoutX="906.0" layoutY="345.0" prefHeight="25.0" prefWidth="84.0" />
+            <Label layoutX="70.0" layoutY="600.0" text="Cant. Nodos" />
+            <Label layoutX="176.0" layoutY="600.0" text="Cant. Aristas" />
+            <Label layoutX="293.0" layoutY="600.0" text="Cant. Ciclos" />
+            <Label layoutX="387.0" layoutY="601.0" text="Tiempo Tarjan (ms)" />
+            <Label layoutX="836.0" layoutY="349.0" text="Cant. Ciclos" />
+            <Button fx:id="button_resetCycles" disable="true" layoutX="438.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#resetCycles">
+               <graphic>
+                  <ImageView fx:id="imageView_reset1" fitHeight="24.0" fitWidth="24.0" onMouseClicked="#resetCycles" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/reset.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <TextArea fx:id="textArea_reference" layoutX="524.0" layoutY="414.0" prefHeight="151.0" prefWidth="466.0" />
+            <Label layoutX="524.0" layoutY="393.0" text="Referencias" />
+            <RadioButton fx:id="radioButton_seeName" disable="true" layoutX="311.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#seeForName" text="Nombres" />
+            <RadioButton fx:id="radioButton_seeID" disable="true" layoutX="311.0" layoutY="68.0" mnemonicParsing="false" onMouseClicked="#seeForID" selected="true" text="Identificadores" />
+            <Label layoutX="310.0" layoutY="44.0" text="Ver por ..." />
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
