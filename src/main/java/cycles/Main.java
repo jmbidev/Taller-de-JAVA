@@ -23,7 +23,7 @@ public class Main extends Application {
 
             case "2":
                 launch(args);
-
+                break;
         }
     }
 

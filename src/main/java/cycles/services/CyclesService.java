@@ -126,4 +126,13 @@ public class CyclesService {
     public int getNumberOfCycles(){
         return this.numberOfCycles;
     }
+    public long getTarjanTime(){
+        return tarjanTime;
+    }
+    public Graph<String> getGraph(){
+        return this.graph;
+    }
+    public String getPath(){
+        return this.path;
+    }
 }
