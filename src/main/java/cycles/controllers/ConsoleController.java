@@ -64,7 +64,7 @@ public class ConsoleController {
         this.requestCyclesOption();
         int limit = this.requestLimit();
 
-        System.out.println(this.serviceForControllers.getExistCycle(idPackage1, idPackage2, limit, this.isExactLimit, this.isWithID));
+        System.out.println(this.serviceForControllers.getCyclesInformation(false, isWithID, false, isExactLimit, limit, idPackage1, idPackage2));
 
         if (!this.serviceForControllers.isCompleteInfo()){
             this.pathForSave = this.requestPathForSave();

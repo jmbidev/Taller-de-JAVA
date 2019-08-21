@@ -42,7 +42,11 @@ public class ServiceForControllers {
 
         information.append("\n");
         information.append(this.getCycleCharacteristics(isTotalCycle, isExactLimit, limit, package1, package2));
-        this.getCycles(limit, isExactLimit, isWithID);
+
+        if (isTotalCycle)
+                this.getCycles(limit, isExactLimit, isWithID);
+        else
+            this.getExistCycle(package1, package2, limit, isExactLimit, isWithID);
 
         if (isForSave)
             information.append(this.infoCycles.toString());
@@ -96,11 +100,11 @@ public class ServiceForControllers {
         return this.isCompleteInfo;
     }
 
-
     // AUXILIARY METHODS
-    public String getExistCycle(long idPackage1, long idPackage2, int limit, boolean isExactLimit, boolean isWithID) {
+    private void getExistCycle(long idPackage1, long idPackage2, int limit, boolean isExactLimit, boolean isWithID) {
         boolean package1;
         boolean package2;
+        boolean isAdded;
 
         this.cyclesService.runTarjan(limit, isExactLimit);
         List<byte[]> cycles = this.cyclesService.getCycles();
@@ -108,6 +112,7 @@ public class ServiceForControllers {
         for (byte[] cycle : cycles) {
             package1 = false;
             package2 = false;
+            isAdded = false;
 
             long[] decompressCycle = this.cyclesService.decompressCycle(cycle);
             int size = decompressCycle.length;
@@ -117,18 +122,17 @@ public class ServiceForControllers {
 
                 if (value == idPackage1)
                     package1 = true;
+
                 else if (value == idPackage2)
                     package2 = true;
 
-                if (package1 && package2){
+                if (package1 && package2 && !isAdded){
                     this.numberOfCycles++;
+                    isAdded = true;
                     this.saveCycle(decompressCycle, isWithID);
                 }
-
             }
         }
-
-        return this.infoToShow.toString();
     }
     private String getCycleCharacteristics(boolean isTotalCycles, boolean isExactLimit, int limit, long package1, long package2) {
         String info = "" ;
