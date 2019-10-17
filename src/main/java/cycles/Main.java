@@ -1,6 +1,7 @@
 package cycles;
 
 import cycles.controllers.ConsoleController;
+import cycles.controllers.ConsoleController2;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,6 +26,8 @@ public class Main extends Application {
                 launch(args);
                 break;
         }
+
+        System.exit(0);
     }
 
     private static void printHeader(){
@@ -51,14 +54,14 @@ public class Main extends Application {
 
     private static void printOptions(){
         System.out.println(
-                "Indique cómo desea ejecutar la aplicación:\n" +
+                ">> Indique cómo desea ejecutar la aplicación:\n" +
                 "   (1) Mediante CONSOLA\n" +
                 "   (2) Mediante INTERFAZ GRÁFICA\n");
     }
     private static String requestOption(){
         boolean isSelected = false;
         Scanner reader = new Scanner(System.in);
-        return  reader.next();
+        return reader.next();
     }
     private static boolean checkOptions(String option){
         boolean isSelected = false;

@@ -1,507 +1,245 @@
 package cycles.controllers;
 
-import cycles.algorithm.Vertex;
-
-import cycles.services.ServiceForControllers;
+import cycles.services.ServicesForGuiController;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.InputMethodEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import javafx.fxml.FXML;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.net.URL;
-import java.util.*;
-
+import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
 
-    private static final int NO_LIMIT = -1;
-    private static final int LIM_MIN = 3;
-
-    @FXML private Button button_searchFile;
-    @FXML private Button button_saveCycles;
-    @FXML private Button button_seeCycles;
-    @FXML private Button button_check;
-    @FXML private Button button_clearCycleTwoPackages;
-    @FXML private Button button_saveCyclesWithPackages;
-    @FXML private Button button_reset;
-    @FXML private Button button_resetCycles;
-
-    @FXML private ComboBox<String> comboBox_package1;
-    @FXML private ComboBox<String> comboBox_package2;
-
-    @FXML private Label label_selectInvalid;
-
-    @FXML private RadioButton radioButton_maxLimit;
-    @FXML private RadioButton radioButton_exactLimit;
-    @FXML private RadioButton radioButton_seeID;
-    @FXML private RadioButton radioButton_seeName;
-
-    @FXML private Spinner<Integer> spinner_maxLimit;
-    @FXML private Spinner<Integer> spinner_exactLimit;
-
-    @FXML private TextArea textArea_answerCycles;
-    @FXML private TextArea textArea_answerCyclesTwoPackages;
-    @FXML private TextArea textArea_reference;
-
-    @FXML private TextField textField_path;
-    @FXML private TextField count_nodes;
-    @FXML private TextField count_edged;
-    @FXML private TextField count_cycles;
-    @FXML private TextField time_tarjan;
-    @FXML private TextField count_cyclesWithPackages;
-
-    @FXML private Tooltip tooltip_check;
-
-    private SpinnerValueFactory<Integer> exactValueFactory;
-    private SpinnerValueFactory<Integer> maxValueFactory;
-
-   // private ServiceForControllers sfc;
+    private static final int MAX_NUMBER_OF_CYCLES_TO_SHOW = 150;
+    private ServicesForGuiController services;
     private Window stage;
-    private boolean manyCycles = false;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        this.exactValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(3, Integer.MAX_VALUE, 3);
-        this.maxValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(3, Integer.MAX_VALUE, 3);
-        this.spinner_maxLimit.setValueFactory(maxValueFactory);
-        this.spinner_maxLimit.setEditable(false);
-        this.spinner_exactLimit.setValueFactory(exactValueFactory);
-        this.spinner_exactLimit.setEditable(false);
+    // ********** Main **********
+    @FXML    private Button resetTool;
+    @FXML    private Button searchFile;
+    @FXML    private TextField path;
+    @FXML    private Pane pane1;
+    @FXML    private Pane pane2;
 
-        this.textArea_answerCycles.setEditable(false);
-        this.textArea_answerCyclesTwoPackages.setEditable(false);
-        this.textArea_reference.setEditable(false);
+    private void initializeMain(){
+        this.path.setText("");
+        this.path.setPromptText("Path");
 
-        this.tooltip_check.setText("Se tienen en cuenta los ciclos con el límite establecido anteriormente");
-        this.panelInitial();
+        this.pane2.setDisable(true);
+        this.pane1.setDisable(false);
+        this.resetTool.setDisable(true);
+        this.searchFile.setDisable(false);
+
+        this.dependenciesAmount.setText("");
+        this.packagesAmount.setText("");
+    }
+    private void resetTool(){
+        this.initializeMain();
+        this.initializeConfiguration();
+        this.initializeResults();
     }
 
-    private void panelInitial() {
-       // this.sfc = new ServiceForControllers();
-        this.clearTextArea();
-        this.button_searchFile.setDisable(false);
-        this.buttons(true);
-        this.radioButtons(true);
-        this.label_selectInvalid.setVisible(false);
-        this.radioButton_seeID.setSelected(true);
-        this.radioButton_seeName.setSelected(false);
-        this.radioButton_exactLimit.setSelected(true);
-        this.radioButton_maxLimit.setSelected(false);
-        this.comboBox_package1.setValue(null);
-        this.comboBox_package2.setValue(null);
-        this.comboBox_package1.setDisable(true);
-        this.comboBox_package2.setDisable(true);
-        this.textField_path.setText("");
+    @Override   public void initialize(URL location, ResourceBundle resources) {
+        this.resetTool();
     }
-
-    private void clearTextArea() {
-        this.textArea_answerCyclesTwoPackages.setText("");
-        this.textArea_answerCycles.setText("");
-        this.textArea_reference.setText("");
-        this.count_edged.setText("");
-        this.count_nodes.setText("");
-        this.count_cycles.setText("");
-        this.time_tarjan.setText("");
-        this.count_cyclesWithPackages.setText("");
-    }
-
-    private void buttons(boolean isDisable){
-        this.button_seeCycles.setDisable(isDisable);
-        this.button_check.setDisable(isDisable);
-        this.button_saveCycles.setDisable(isDisable);
-        this.button_saveCyclesWithPackages.setDisable(isDisable);
-        this.button_clearCycleTwoPackages.setDisable(isDisable);
-        this.button_resetCycles.setDisable(isDisable);
-        this.button_reset.setDisable(isDisable);
-    }
-
-    private void radioButtons(boolean isDisable){
-        this.radioButton_maxLimit.setDisable(isDisable);
-        this.radioButton_exactLimit.setDisable(isDisable);
-        this.radioButton_seeID.setDisable(isDisable);
-        this.radioButton_seeName.setDisable(isDisable);
-    }
-
-    @FXML
-    public void searchFile(MouseEvent event){
-        /*FileChooser fileChooser = new FileChooser();
+    @FXML       public void clickSearchPath(MouseEvent event){
+        FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Buscar Archivo");
-
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Odem File", "*.odem"));
         File selectedFile = fileChooser.showOpenDialog(stage);
-
         if (selectedFile != null){
             String path = selectedFile.getPath();
-            //this.app.setPath(path);
-            //this.app.runSAX();
-            this.textField_path.setText(path);
-            this.button_searchFile.setDisable(true);
-            this.button_seeCycles.setDisable(false);
-            this.button_reset.setDisable(false);
-            this.spinner_exactLimit.setDisable(false);
-            this.radioButtons(false);
-        }
+            this.services = new ServicesForGuiController(path);
 
-         */
+            this.path.setText(path);
+            this.path.setDisable(true);
+            this.resetTool.setDisable(false);
+            this.pane2.setDisable(false);
+            this.references.setText(this.services.getReferences());
+            this.packagesAmount.setText(String.valueOf(this.services.getNumberOfPackages()));
+            this.dependenciesAmount.setText(String.valueOf(this.services.getNumberOfDependencies()));
+        }
+    }
+    @FXML       public void clickResetTool(MouseEvent event){
+        this.resetTool();
     }
 
-    @FXML
-    public void seeCycles(MouseEvent event){
-        /*int limit = NO_LIMIT;
-        boolean isExactLimit = false;
 
-        if (this.radioButton_maxLimit.isSelected()){
-            isExactLimit = false;
-            limit = this.spinner_maxLimit.getValue();
+    // ********** Configuration **********
+
+    @FXML   private Pane config;
+
+    @FXML    private Button showCycles;
+    @FXML    private Button saveCycles;
+    @FXML    private Button resetCycles;
+
+    @FXML    private Spinner<Integer> limit;
+    @FXML    private RadioButton exactLimit;
+    @FXML    private RadioButton maxLimit;
+
+    @FXML    private RadioButton showToID;
+    @FXML    private RadioButton showToName;
+
+    @FXML    private RadioButton allCycles;
+    @FXML    private RadioButton particularCycles;
+    @FXML    private ComboBox<String> package1;
+    @FXML    private ComboBox<String> package2;
+
+    @FXML    private Label process;
+
+    private void initializeConfiguration(){
+        this.config.setDisable(false);
+        this.showCycles.setDisable(false);
+        this.saveCycles.setDisable(true);
+        this.resetCycles.setDisable(true);
+
+        this.exactLimit.setSelected(true);
+        this.maxLimit.setSelected(false);
+
+        this.showToID.setSelected(true);
+        this.showToName.setSelected(false);
+
+        this.allCycles.setSelected(true);
+        this.particularCycles.setSelected(false);
+
+        this.package1.setValue(null);
+        this.package2.setValue(null);
+        this.package1.setDisable(true);
+        this.package2.setDisable(true);
+
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(3, Integer.MAX_VALUE, 3);
+        limit.setValueFactory(valueFactory);
+    }
+    private void buildOptionsPackages(){
+        this.package1.getItems().clear();
+        this.package2.getItems().clear();
+
+        for (String option : this.services.getPackagesOptions(this.showToID.isSelected())){
+            this.package1.getItems().add(option);
+            this.package2.getItems().add(option);
         }
+    }
 
-        if (this.radioButton_exactLimit.isSelected()){
-            isExactLimit = true;
-            limit = this.spinner_exactLimit.getValue();
-        }
+    @FXML   public void clickExactLimit(MouseEvent event){
+        this.exactLimit.setSelected(true);
+        this.maxLimit.setSelected(false);
+    }
+    @FXML   public void clickMaxLimit(MouseEvent event){
+        this.maxLimit.setSelected(true);
+        this.exactLimit.setSelected(false);
+    }
+    @FXML   public void clickShowToID(MouseEvent event){
+        this.showToID.setSelected(true);
+        this.showToName.setSelected(false);
+        this.buildOptionsPackages();
+        this.references.setText(this.services.getReferences());
+    }
+    @FXML   public void clickShowToName(MouseEvent event){
+        this.showToName.setSelected(true);
+        this.showToID.setSelected(false);
+        this.buildOptionsPackages();
+        this.references.setText("");
+    }
+    @FXML   public void clickAllCycles(MouseEvent event){
+        this.allCycles.setSelected(true);
+        this.particularCycles.setSelected(false);
 
-        //this.app.runTarjan(limit, isExactLimit);
-        //List<List<Vertex<String>>> cycles = this.app.getCycles();
-        StringBuilder answer = new StringBuilder();
+        this.package1.setDisable(true);
+        this.package2.setDisable(true);
+    }
+    @FXML   public void clickParticularCycles(MouseEvent event) {
+        this.particularCycles.setSelected(true);
+        this.allCycles.setSelected(false);
 
-        this.count_nodes.setText(String.valueOf(this.app.getGraph().getVertexes().size()));
-        this.count_edged.setText(String.valueOf(this.app.getGraph().getEdges().size()));
-        this.count_cycles.setText(String.valueOf(cycles.size()));
-        this.time_tarjan.setText(String.valueOf(this.app.getTarjanTime()));
-
-        //if (cycles.size() == 0){
-            answer.append("No hay ciclos de dependencia entre los paquetes");
-
-        } else if (cycles.size() < 300000){
-            answer.append("Se detectaron los siguientes ciclos de dependencias entre paquetes: \n\n");
-            answer.append(this.showCycles(cycles));
-        } else {
-            answer.append("Muchos ciclos para mostrar. Guardar en archivo");
-            this.manyCycles = true;
-            this.button_saveCycles.setDisable(false);
-        }
-
-
-        this.textArea_answerCycles.setText(answer.toString());
-
-        if (this.radioButton_seeID.isSelected()){
-            this.showReferences();
-        } else {
-            this.textArea_reference.setText("");
-        }
+        this.package1.setDisable(false);
+        this.package2.setDisable(false);
 
         this.buildOptionsPackages();
-
-        this.radioButtons(true);
-        this.button_seeCycles.setDisable(true);
-        this.spinner_exactLimit.setDisable(true);
-        this.spinner_maxLimit.setDisable(true);
-
-        this.button_resetCycles.setDisable(false);
-        this.button_saveCycles.setDisable(false);
-        this.button_check.setDisable(false);
-        this.comboBox_package1.setDisable(false);
-        this.comboBox_package2.setDisable(false);
-*/
     }
-
-    private String showCycles(List<List<Vertex<String>>> cycles){
-        /*StringBuilder show = new StringBuilder();
-        int i;
-
-        if (this.radioButton_seeID.isSelected()) {
-
-            for (List<Vertex<String>> cycle : cycles){
-                i = cycle.size();
-
-                for (Vertex<String> vertex : cycle){
-                    i--;
-                    if (i == 0) show.append(String.valueOf(vertex.getId()));
-                    else        show.append(String.valueOf(vertex.getId())+" → ");
-                }
-                show.append("\n");
-            }
-        } else {
-            for (List<Vertex<String>> cycle : cycles){
-                i = cycle.size();
-
-                for (Vertex<String> vertex : cycle){
-                    i--;
-                    if (i == 0) show.append(vertex.getData());
-                    else        show.append(vertex.getData()+" → ");
-                }
-                show.append("\n");
-            }
-        }
-        return show.toString();
-*/
-        return new String();
+    @FXML   public void clickResetShowCycles(MouseEvent event){
+        this.initializeConfiguration();
+        this.initializeResults();
+        this.config.setDisable(false);
+        this.showCycles.setDisable(false);
+        this.saveCycles.setDisable(true);
+        this.resetCycles.setDisable(true);
+        this.references.setText(this.services.getReferences());
     }
+    @FXML   public void clickShowCycles(MouseEvent event){
+        this.config.setDisable(true);
+        this.saveCycles.setDisable(false);
+        this.showCycles.setDisable(true);
+        this.resetCycles.setDisable(false);
 
-    @FXML
-    private void showReferences() {
-        /*
-        StringBuilder answer = new StringBuilder();
-        Collection<Vertex<String>> vertexes = this.app.getGraph().getVertexes();
-        for (Vertex<String> vertex : vertexes){
-            answer.append(vertex.getId() + " --> " + vertex.getData() + "\n");
-        }
-        this.textArea_reference.setText(answer.toString());
+        int limit =             this.limit.getValue();
+        boolean isExactLimit =  this.exactLimit.isSelected();
+        boolean isWithID =      this.showToID.isSelected();
 
-         */
-    }
+        this.process.setVisible(true);
 
-    @FXML
-    public void saveCycles(MouseEvent event){
-        /*
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Seleccionar Directorio");
-        File selectedDirectory = directoryChooser.showDialog(stage);
-
-        if (selectedDirectory != null){
-
-            if (manyCycles){
-                this.saveManyCycles(selectedDirectory.getPath());
-            } else {
-                this.app.saveAnswerCycles(selectedDirectory.getPath(), this.textArea_answerCycles.getText());
-                this.button_saveCycles.setDisable(true);
-            }
-
-        }
-        this.button_saveCycles.setDisable(true);
-
-         */
-    }
-
-    private void saveManyCycles(String path){
-        /*
-        StringBuilder pathDestination = new StringBuilder(path);
-        pathDestination.append("/answerCycles.txt");
-        try {
-            File file = new File(pathDestination.toString());
-            FileWriter fw = new FileWriter(file);
-            BufferedWriter bw = new BufferedWriter(fw);
-
-            List<List<Vertex<String>>> cycles = this.app.getCycles();
-
-            if (this.radioButton_seeID.isSelected()) {
-                for (List<Vertex<String>> cycle : cycles){
-                    int i = cycle.size();
-
-                    for (Vertex<String> vertex : cycle){
-                        i--;
-                        if (i == 0) bw.write(String.valueOf(vertex.getId()));
-                        else        bw.write(String.valueOf(vertex.getId())+" → ");
-                    }
-                    bw.write("\n");
-                }
-            } else {
-                for (List<Vertex<String>> cycle : cycles){
-                    int i = cycle.size();
-
-                    for (Vertex<String> vertex : cycle){
-                        i--;
-                        if (i == 0) bw.write(vertex.getData());
-                        else        bw.write(vertex.getData()+" → ");
-                    }
-                    bw.write("\n");
-                }
-            }
-
-            bw.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-    }
-
-    private void buildOptionsPackages() {
-/*
-        this.comboBox_package1.getItems().clear();
-        this.comboBox_package2.getItems().clear();
-
-        if (this.radioButton_seeID.isSelected()){
-            Set<Long> ids = this.app.getGraph().getIDs();
-            for (Long id : ids){
-                this.comboBox_package1.getItems().add(String.valueOf(id));
-                this.comboBox_package2.getItems().add(String.valueOf(id));
-            }
-        } else {
-            for (String option : this.app.getPackages()) {
-                this.comboBox_package1.getItems().add(option);
-                this.comboBox_package2.getItems().add(option);
-            }
-        }*/
-    }
-
-
-    @FXML
-    public void check(MouseEvent event) {
-        /*this.label_selectInvalid.setVisible(false);
-
-        String package1 = this.comboBox_package1.getValue();
-        String package2 = this.comboBox_package2.getValue();
-
-        if (package1 == null && package2 == null){
-            this.label_selectInvalid.setText("¡DEBE SELECCIONAR LOS PAQUETES!");
-            this.label_selectInvalid.setVisible(true);
-        } else if (package1 == null) {
-            this.label_selectInvalid.setText("¡SELECCIONE EL PAQUETE #1!");
-            this.label_selectInvalid.setVisible(true);
-        } else if (package2 == null){
-            this.label_selectInvalid.setText("¡SELECCIONE EL PAQUETE #2!");
-            this.label_selectInvalid.setVisible(true);
+        if (allCycles.isSelected()){
+            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW));
+            this.process.setVisible(false);
+            this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(false)));
         }
 
         else {
-            List<List<Vertex<String>>> cycles = this.existCycle();
-            StringBuilder text = new StringBuilder(this.textArea_answerCyclesTwoPackages.getText());
-
-            text.append( "Paquete #1: " + package1 + "\n" + "Paquete #2: " + package2 + "\n" + "\n");
-
-            if (cycles.size() == 0) {
-                text.append("No existen ciclos de dependencia entre los paquetes seleccionados.");
-
-            } else text.append(this.showCycles(cycles));
-
-            text.append("\n\n");
-            text.append("-----------------------------------------------------");
-            text.append("\n\n");
-
-            this.textArea_answerCyclesTwoPackages.setText(text.toString());
-            this.count_cyclesWithPackages.setText(String.valueOf(cycles.size()));
-
-            this.button_saveCyclesWithPackages.setDisable(false);
-            this.button_clearCycleTwoPackages.setDisable(false);
+            String package1 = this.package1.getValue();
+            String package2 = this.package2.getValue();
+            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
+            this.process.setVisible(false);
+            this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(true)));
         }
 
-         */
+        this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
     }
+    @FXML   public void clickSaveOut(MouseEvent event){
 
-    private List<List<Vertex<String>>> existCycle(){
-        /*List<List<Vertex<String>>> cycles = this.app.getCycles();
-        List<List<Vertex<String>>> cyclesWithPackages = new ArrayList<>();
-
-        if (radioButton_seeID.isSelected()){
-            for (List<Vertex<String>> cycle : cycles){
-                boolean isPackage1 = false;
-                boolean isPackage2 = false;
-
-                for (Vertex<String> vertex : cycle){
-                    if (vertex.getId() == Integer.parseInt(this.comboBox_package1.getValue())) isPackage1 = true;
-                    if (vertex.getId() == Integer.parseInt(this.comboBox_package2.getValue())) isPackage2 = true;
-
-                    if (isPackage1 && isPackage2){
-                        cyclesWithPackages.add(cycle);
-                        break;
-                    }
-                }
-            }
-        }
-
-        else {
-            for (List<Vertex<String>> cycle : cycles){
-                boolean isPackage1 = false;
-                boolean isPackage2 = false;
-
-                for (Vertex<String> vertex : cycle){
-
-                    if (vertex.getData().equals(this.comboBox_package1.getValue())) isPackage1 = true;
-                    if (vertex.getData().equals(this.comboBox_package2.getValue())) isPackage2 = true;
-
-                    if (isPackage1 && isPackage2){
-                        cyclesWithPackages.add(cycle);
-                    }
-                }
-
-
-            }
-        }
-*/
-        return new ArrayList<>();
-    }
-
-    @FXML
-    public void clearCycleTwoPackages(){
-        this.textArea_answerCyclesTwoPackages.setText("");
-        this.button_saveCyclesWithPackages.setDisable(true);
-        this.button_clearCycleTwoPackages.setDisable(true);
-        this.count_cyclesWithPackages.setText("");
-    }
-
-    @FXML
-    public void saveCyclesWithPackages(MouseEvent event){/*
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Seleccionar Directorio");
         File selectedDirectory = directoryChooser.showDialog(stage);
-
         if (selectedDirectory != null){
-            this.app.saveAnswerTwoPackages(selectedDirectory.getPath(), this.textArea_answerCyclesTwoPackages.getText());
-            this.button_saveCyclesWithPackages.setDisable(true);
-        }*/
+            int limit =             this.limit.getValue();
+            boolean isExactLimit =  this.exactLimit.isSelected();
+            boolean isWithID =      this.showToID.isSelected();
+            String path     = selectedDirectory.getPath();
+
+            if (this.particularCycles.isSelected()){
+                String package1 = this.package1.getValue();
+                String package2 = this.package2.getValue();
+
+                this.services.saveOut(path, limit, isExactLimit, isWithID, package1, package2);
+            }
+
+            else    this.services.saveOut(path, limit, isExactLimit, isWithID);
+        }
+
+
     }
 
-    @FXML
-    public void restart(MouseEvent event){
-        this.panelInitial();
+    // ********** Results **********
+    @FXML    private TextArea answer;
+    @FXML    private TextArea references;
+    @FXML    private TextField cyclesAmount;
+    @FXML    private TextField dependenciesAmount;
+    @FXML    private TextField packagesAmount;
+    @FXML    private TextField tarjanTime;
+
+
+    private void initializeResults(){
+        this.answer.setText("");
+        this.references.setText("");
+        this.cyclesAmount.setText("");
+        this.tarjanTime.setText("");
     }
 
-    @FXML
-    public void resetCycles(){
-        this.clearTextArea();
-        this.buttons(true);
-        this.button_seeCycles.setDisable(false);
-        this.radioButtons(false);
-        this.button_resetCycles.setDisable(false);
-        this.label_selectInvalid.setVisible(false);
-        this.comboBox_package1.setDisable(true);
-        this.comboBox_package2.setDisable(true);
-        this.button_reset.setDisable(false);
-
-        this.radioButton_seeID.setSelected(true);
-        this.radioButton_seeName.setSelected(false);
-        this.radioButton_exactLimit.setSelected(true);
-        this.radioButton_maxLimit.setSelected(false);
-        this.spinner_exactLimit.setDisable(false);
-        this.spinner_maxLimit.setDisable(true);
-    }
-
-    // Radio Button
-
-    @FXML
-    public void cycleExactLimit(){
-        this.radioButton_maxLimit.setSelected(false);
-        this.radioButton_exactLimit.setSelected(true);
-
-        this.spinner_maxLimit.setDisable(true);
-        this.spinner_exactLimit.setDisable(false);
-    }
-
-    @FXML
-    public void cycleMaxLimit(){
-        this.radioButton_maxLimit.setSelected(true);
-        this.radioButton_exactLimit.setSelected(false);
-
-        this.spinner_maxLimit.setDisable(false);
-        this.spinner_exactLimit.setDisable(true);
-    }
-
-    @FXML
-    public void seeForID(){
-        this.radioButton_seeID.setSelected(true);
-        this.radioButton_seeName.setSelected(false);
-    }
-
-    @FXML
-    public void seeForName(){
-        this.radioButton_seeID.setSelected(false);
-        this.radioButton_seeName.setSelected(true);
-    }
 }

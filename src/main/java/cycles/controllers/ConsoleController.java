@@ -174,7 +174,7 @@ public class ConsoleController {
         try{
             in =  reader.nextInt();
         } catch (InputMismatchException ime){
-            System.out.println("SÓLO VALORES ENTEROS");
+            System.out.println("Entrada Invalida");
         }
 
         return in;
