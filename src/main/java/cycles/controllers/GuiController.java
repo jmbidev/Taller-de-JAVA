@@ -94,8 +94,6 @@ public class GuiController implements Initializable {
     @FXML    private ComboBox<String> package1;
     @FXML    private ComboBox<String> package2;
 
-    @FXML    private Label process;
-
     private void initializeConfiguration(){
         this.config.setDisable(false);
         this.showCycles.setDisable(false);
@@ -173,6 +171,7 @@ public class GuiController implements Initializable {
         this.saveCycles.setDisable(true);
         this.resetCycles.setDisable(true);
         this.references.setText(this.services.getReferences());
+        this.services.resetCycleInformationBuilders();
     }
     @FXML   public void clickShowCycles(MouseEvent event){
         this.config.setDisable(true);
@@ -184,23 +183,27 @@ public class GuiController implements Initializable {
         boolean isExactLimit =  this.exactLimit.isSelected();
         boolean isWithID =      this.showToID.isSelected();
 
-        this.process.setVisible(true);
 
         if (allCycles.isSelected()){
-            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW));
-            this.process.setVisible(false);
+            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForGuiController.NO_PACKAGE, ServicesForGuiController.NO_PACKAGE));
             this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(false)));
+            this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
         }
 
         else {
             String package1 = this.package1.getValue();
             String package2 = this.package2.getValue();
-            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
-            this.process.setVisible(false);
-            this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(true)));
-        }
+            if (package1 != null && package2 != null) {
+                this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
+                int amountCycles = this.services.getNumberOfCycles(true);
+                if ( amountCycles == MAX_NUMBER_OF_CYCLES_TO_SHOW)
+                    this.cyclesAmount.setText(MAX_NUMBER_OF_CYCLES_TO_SHOW+"+");
+                else
+                    this.cyclesAmount.setText(String.valueOf(amountCycles));
 
-        this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
+                this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
+            }
+        }
     }
     @FXML   public void clickSaveOut(MouseEvent event){
 
@@ -217,10 +220,11 @@ public class GuiController implements Initializable {
                 String package1 = this.package1.getValue();
                 String package2 = this.package2.getValue();
 
-                this.services.saveOut(path, limit, isExactLimit, isWithID, package1, package2);
+                this.services.saveAsTextFile(path, limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2);
+                this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(true)));
             }
 
-            else    this.services.saveOut(path, limit, isExactLimit, isWithID);
+            else    this.services.saveAsTextFile(path, limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForGuiController.NO_PACKAGE, ServicesForGuiController.NO_PACKAGE);
         }
 
 

@@ -162,11 +162,6 @@
                </image>
             </ImageView>
             <Label fx:id="label_names" layoutX="780.0" layoutY="435.0" prefHeight="17.0" prefWidth="164.0" text="Jeremías Brisuela | Noelia Fluxá" textOverrun="CLIP" />
-            <Label fx:id="process" layoutX="438.0" layoutY="8.0" prefHeight="25.0" prefWidth="105.0" text="Procesando ..." textFill="#1e00ff" textOverrun="CLIP" visible="false">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
             <Label fx:id="label_references1" layoutX="14.0" layoutY="299.0" text="Información" textFill="#b0b0b0">
                <font>
                   <Font name="System Italic" size="12.0" />

@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.util.Scanner;
 
 public class Main extends Application {
-    private static ConsoleController consoleController = new ConsoleController();
+    private static ConsoleController2 consoleController = new ConsoleController2();
 
     public static void main(String[] args) {
         printHeader();

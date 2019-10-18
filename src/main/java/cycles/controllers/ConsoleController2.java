@@ -42,10 +42,10 @@ public class ConsoleController2 {
     private String requestNewFilePath() {
         Printer.printRequestNewFilePath();
         Scanner reader = new Scanner(System.in);
-        String path = reader.next();
+        String path = reader.nextLine();
 
         while (!isValidFilePath(path)){
-            System.out.println("\n>> Opción incorrecta. Intente nuevamente:");
+            Printer.printInvalidInputPath();
             path = reader.next();
         }
 
@@ -60,9 +60,8 @@ public class ConsoleController2 {
         Scanner reader = new Scanner(System.in);
         String in = reader.next();
         int option = this.getValidOption(in, min, max);
-        System.out.println(option);
         while (option == INVALID_OPTION){
-            System.out.println("\n>> Opción incorrecta. Intente nuevamente");
+            Printer.printInvalidOption();
             in = reader.next();
             option = this.getValidOption(in, min, max);
         }

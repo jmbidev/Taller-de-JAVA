@@ -22,12 +22,18 @@ public class Printer {
                         "   (9)    hibernate-core-4.0.0.Final.odem\n" +
                         "   (10)   hibernate-core-4.1.0.Final.odem\n" +
                         "   (11)   hibernate-core-4.2.0.Final.odem\n" +
-                        "   (12)    * INGRESAR RUTA de un archivo ODEM\n"
+                        "   (12)   * INGRESAR RUTA de un archivo ODEM\n"
 
         );
     }
     public static void printRequestNewFilePath(){
         System.out.println(
-                "\n>> Ingrese la ruta (que no contenga espacios en blanco) del archivo ODEM:");
+                "\n>> Ingrese la ruta del archivo ODEM:");
+    }
+    public static void printInvalidOption(){
+        System.out.println("\n>> Opción incorrecta. Intente nuevamente");
+    }
+    public static void printInvalidInputPath(){
+        System.out.println("\n>> Entrada incorrecta: el archivo no es '.odem' o es inexistente. Intente nuevamente");
     }
 }
