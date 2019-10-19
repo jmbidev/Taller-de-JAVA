@@ -3,7 +3,6 @@ package cycles.utils;
 import cycles.services.CyclesService;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 public class ParticularCycles extends CycleInformationBuilder {
     private int cyclesAmount;
@@ -17,7 +16,8 @@ public class ParticularCycles extends CycleInformationBuilder {
         this.lastCycleView = 0;
     }
 
-    @Override    public String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow) {
+    @Override
+    public String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow) {
         this.cyclesAmount = 0;
         int cyclesAvailable = this.cyclesService.getNumberOfCycles();
 
@@ -52,7 +52,9 @@ public class ParticularCycles extends CycleInformationBuilder {
         this.isCompleteInformation = true;
         return this.fullInformationToShow(isWithID);
     }
-    @Override    public String getCycleInformation(long[] cycle, int index, boolean isWithID) {
+
+    @Override
+    public String getCycleInformation(long[] cycle, int index, boolean isWithID) {
         StringBuilder info = new StringBuilder();
 
         String infoCycleCommon = this.getInfoAboutCycle(cycle, isWithID, this.package1, this.package2);
@@ -68,10 +70,14 @@ public class ParticularCycles extends CycleInformationBuilder {
 
         return info.toString();
     }
-    @Override    public int getNumberOfCycles() {
+
+    @Override
+    public int getNumberOfCycles() {
         return this.cyclesAmount;
     }
-    @Override    protected String getSubtitleToFile(boolean isExactLimit, int limit) {
+
+    @Override
+    protected String getSubtitleToFile(boolean isExactLimit, int limit) {
         StringBuilder info = new StringBuilder();
 
         info.append("   Ciclos entre '");
@@ -86,7 +92,9 @@ public class ParticularCycles extends CycleInformationBuilder {
 
         return info.toString();
     }
-    @Override    protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
+
+    @Override
+    protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
         this.processCycles(this.lastCycleView, this.cyclesService.getNumberOfCycles(), isWithID, wr);
     }
 

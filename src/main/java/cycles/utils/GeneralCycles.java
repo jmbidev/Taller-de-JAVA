@@ -56,4 +56,15 @@ public class GeneralCycles extends CycleInformationBuilder {
     protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
         processCycles(maxNumberOfCyclesToShow, this.getNumberOfCycles(), isWithID, wr);
     }
+
+    private String limitInformationToShow(int maxNumberOfCyclesToShow, boolean isWithID){
+        StringBuilder info = new StringBuilder();
+        info.append(this.getHeaderLimitInfo());
+
+        this.processCycles(0, maxNumberOfCyclesToShow, isWithID, null);
+        info.append(this.informationToShow);
+        info.append("   ...");
+
+        return info.toString();
+    }
 }

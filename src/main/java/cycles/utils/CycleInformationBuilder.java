@@ -15,8 +15,7 @@ public abstract class CycleInformationBuilder {
         this.cyclesService = cyclesService;
     }
 
-    public abstract String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow);
-
+    // SERVICES
     public void saveInfoInTextFile(boolean isWithID, boolean isExactLimit, int limit, int maxNumberOfCyclesToShow, PrintWriter wr, String references){
         wr.write(this.getHeaderToFile());
         wr.write("\n   ********** CICLOS **********\n\n");
@@ -39,37 +38,6 @@ public abstract class CycleInformationBuilder {
         wr.write(this.getInfoToFile());
 
     }
-
-    protected abstract void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr);
-
-    protected void processCycles(int since, int until, boolean isWithID, PrintWriter wr){
-        List<byte[]> compressCycles = this.cyclesService.getCycles();
-
-        for (int i = since; i < until; i++) {
-            byte[] compressCycle = compressCycles.get(i);
-            long[] decompressCycle = this.cyclesService.decompressCycle(compressCycle);
-            this.buildInformation(decompressCycle, i, isWithID, wr);
-        }
-    }
-    protected void buildInformation(long[] cycle, int index, boolean isWithID, PrintWriter wr){
-        if (wr == null)
-            this.informationToShow.append(this.getCycleInformation(cycle, index, isWithID));
-        else
-            wr.write(this.getCycleInformation(cycle, index, isWithID));
-    }
-    protected String getHeaderLimitInfo(){
-        return ("¡ATENCIÓN! La cantidad de ciclos es mayor al permitido para mostrar.\n" +
-                "Guarde la salida en un archivo para visualizarla completa.\n\n");
-    }
-    private String getHeaderToFile(){
-        StringBuilder header = new StringBuilder();
-        header.append("------------------------------------------\n");
-        header.append("TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n\n");
-        header.append("Jeremías Brisuela  jere05.mdq@gmail.com\n");
-        header.append("Noelia Fluxá       noefluxa@gmail.com\n");
-        header.append("------------------------------------------\n\n");
-        return header.toString();
-    }
     public String getInfoToFile(){
         StringBuilder info = new StringBuilder();
 
@@ -90,7 +58,52 @@ public abstract class CycleInformationBuilder {
 
         return info.toString();
     }
+    public abstract String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow);
+    public abstract int getNumberOfCycles();
 
+    // AUXILIARY METHODS
+    private void buildInformation(long[] cycle, int index, boolean isWithID, PrintWriter wr){
+        if (wr == null)
+            this.informationToShow.append(this.getCycleInformation(cycle, index, isWithID));
+        else
+            wr.write(this.getCycleInformation(cycle, index, isWithID));
+    }
+    private String getHeaderToFile(){
+        StringBuilder header = new StringBuilder();
+        header.append("------------------------------------------\n");
+        header.append("TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n\n");
+        header.append("Jeremías Brisuela  jere05.mdq@gmail.com\n");
+        header.append("Noelia Fluxá       noefluxa@gmail.com\n");
+        header.append("------------------------------------------\n\n");
+        return header.toString();
+    }
+    protected String getInfoAboutPackage(long packageID, boolean isWithID){
+        if (isWithID)
+            return String.valueOf(packageID);
+
+        return this.cyclesService.getPackages().get(packageID);
+    }
+
+    protected abstract String getCycleInformation(long[] cycle, int index, boolean isWithID);
+    protected abstract void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr);
+    protected abstract String getSubtitleToFile(boolean isExactLimit, int limit);
+    protected void processCycles(int since, int until, boolean isWithID, PrintWriter wr){
+        List<byte[]> compressCycles = this.cyclesService.getCycles();
+
+        for (int i = since; i < until; i++) {
+            byte[] compressCycle = compressCycles.get(i);
+            long[] decompressCycle = this.cyclesService.decompressCycle(compressCycle);
+            this.buildInformation(decompressCycle, i, isWithID, wr);
+        }
+    }
+    protected String getHeaderLimitInfo(){
+        return ("¡ATENCIÓN! La cantidad de ciclos es mayor al permitido para mostrar.\n" +
+                "Guarde la salida en un archivo para visualizarla completa.\n\n");
+    }
+    protected String fullInformationToShow(boolean isWithID){
+        this.processCycles(0, this.cyclesService.getNumberOfCycles(), isWithID, null);
+        return this.informationToShow.toString();
+    }
     protected String getInfoAboutCycle(long[] cycle, boolean isWithID){
         StringBuilder info = new StringBuilder();
         int cycleSize = cycle.length;
@@ -105,28 +118,4 @@ public abstract class CycleInformationBuilder {
 
         return info.toString();
     }
-    protected String getInfoAboutPackage(long packageID, boolean isWithID){
-        if (isWithID)
-            return String.valueOf(packageID);
-
-        return this.cyclesService.getPackages().get(packageID);
-    }
-    protected String fullInformationToShow(boolean isWithID){
-        this.processCycles(0, this.cyclesService.getNumberOfCycles(), isWithID, null);
-        return this.informationToShow.toString();
-    }
-    protected String limitInformationToShow(int maxNumberOfCyclesToShow, boolean isWithID){
-        StringBuilder info = new StringBuilder();
-        info.append(this.getHeaderLimitInfo());
-
-        this.processCycles(0, maxNumberOfCyclesToShow, isWithID, null);
-        info.append(this.informationToShow);
-        info.append("   ...");
-
-        return info.toString();
-    }
-
-    public abstract String getCycleInformation(long[] cycle, int index, boolean isWithID);
-    public abstract int getNumberOfCycles();
-    protected abstract String getSubtitleToFile(boolean isExactLimit, int limit);
 }

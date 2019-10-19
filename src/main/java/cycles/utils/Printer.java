@@ -1,6 +1,5 @@
 package cycles.utils;
 
-import java.util.EventListener;
 import java.util.List;
 
 public class Printer {
@@ -39,7 +38,6 @@ public class Printer {
     public static void printInvalidInputPath(){
         System.out.println("\n>> Entrada incorrecta: el archivo no es '.odem' o es inexistente. Intente nuevamente");
     }
-
     public static void printRequestTypeLimit() {
         System.out.println(
                 "\n>> ¿Con qué límite?\n" +
@@ -47,7 +45,6 @@ public class Printer {
                         "   (2) Limite MÁXIMO\n"
         );
     }
-
     public static void printRequestIsWithID() {
         System.out.println(
                 "\n>> ¿Cómo visualizar los ciclos?\n" +
@@ -55,19 +52,15 @@ public class Printer {
                         "   (2) Por NOMBRE DE PAQUETE\n"
         );
     }
-
     public static void printReferences(String references) {
         System.out.println("\n>> Referencias:\n" + references);
     }
-
-
     public static void printPackageNames(List<String> packageName) {
         System.out.println("\n>> Nombre de paquetes:");
         for (String name : packageName){
             System.out.println("     "+name);
         }
     }
-
     public static void printRequestPackage(int number, boolean isWithID) {
         StringBuilder msg = new StringBuilder();
         msg.append("\n>> Ingrese el ");
@@ -78,29 +71,23 @@ public class Printer {
         msg.append("\n");
         System.out.println(msg.toString());
     }
-
     public static void printCycles(String infoToShow) {
         System.out.println("\n********** CICLOS **********");
         System.out.println(infoToShow);
     }
-
     public static void printRequestLimit() {
         System.out.println("\n>> Ingresar el límite (>2)\n");
     }
-
     public static void printRequestForSave() {
         System.out.println("\n>> Ingresar ruta de CARPETA dónde guardar la información\n");
     }
-
     public static void printInvalidInputPathForSave() {
         System.out.println("\n>> Entrada incorrecta: no es una carpeta o es inexistente. Intente nuevamente");
     }
-
     public static void printInformation(String info){
         System.out.println("\n********** INFORMACIÓN **********");
         System.out.println(info);
     }
-
     public static void printQuestionSave() {
         System.out.println(
                 "\n>> ¿Guardar resultados en archivo?\n" +
@@ -108,7 +95,6 @@ public class Printer {
                         "   (2) No\n"
         );
     }
-
     public static void printRequestContinue() {
         System.out.println(
                 "\n>> ¿Cómo continuar?\n" +

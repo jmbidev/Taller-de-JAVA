@@ -238,7 +238,6 @@ public class GuiController implements Initializable {
     @FXML    private TextField packagesAmount;
     @FXML    private TextField tarjanTime;
 
-
     private void initializeResults(){
         this.answer.setText("");
         this.references.setText("");
