@@ -1,397 +1,243 @@
 package cycles.controllers;
 
-import cycles.services.ServiceForControllers;
+import cycles.services.ServicesForControllers;
+import cycles.utils.Printer;
 
 import java.io.File;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class ConsoleController {
+    private static final int MAX_NUMBER_OF_CYCLES_TO_SHOW = 20;
+    private static final int INVALID_OPTION = -1;
+    private static final String INVALID_ENTRY = ">> ¡ERROR! → Entrada Invalida";
     private String path, pathForSave;
     private boolean isExactLimit, isWithID;
-    private ServiceForControllers serviceForControllers;
+    private ServicesForControllers services;
 
     public ConsoleController() {
         this.path = null;
     }
 
     public void runConsole() {
-        String action = this.requestAction();
+        boolean continueOtherFile = true;
 
-        this.requestPath();
-        if (path == null)
-            path = this.requestNewPath();
+        while (continueOtherFile){
+            continueOtherFile = false;
+            this.path = this.requestFilePath();
+            this.services = new ServicesForControllers(this.path);
+            boolean continueSameFile = true;
 
-        this.serviceForControllers = new ServiceForControllers(path);
+            while (continueSameFile){
+                this.services.resetCycleInformationBuilders();
+                Printer.printActionsOptions();
+                int action = this.requestOption(1, 2);
 
-        switch (action) {
-            case "1":
-                this.showCycles();
-                break;
+                boolean isExactLimit = this.requestTypeLimit();
+                int limit = this.requestLimit();
 
-            case "2":
-                this.printReferences(this.serviceForControllers.getReferences());
-                long idPackage1 = this.requestPackageID("primer");
-                long idPackage2 = this.requestPackageID("segundo");
-                this.existCycle(idPackage1, idPackage2);
-                break;
-        }
-    }
+                boolean isWithID = this.requestView();
+                boolean referencesWereShown = false;
+                String package1, package2;
+                if (action == 2){
+                    if (isWithID){
+                        Printer.printReferences(this.services.getReferences());
+                        referencesWereShown = true;
+                    }
+                    else    Printer.printPackageNames(this.services.getPackagesName());
+                    package1 = this.requestPackage(1, isWithID);
+                    package2 = this.requestPackage(2, isWithID);
+                }
+                else{
+                    package1 = ServicesForControllers.NO_PACKAGE;
+                    package2 = ServicesForControllers.NO_PACKAGE;
+                }
 
-    // ACTIONS
-    private void showCycles(){
-        this.requestCyclesOption();
-        int limit = this.requestLimit();
-        System.out.println(this.serviceForControllers.getCyclesInformation(false, this.isWithID, true, this.isExactLimit, limit, -1, -1));
+                String info = this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2);
+                Printer.printCycles(info);
 
-        if (!this.serviceForControllers.isCompleteInfo()){
-            this.printIncompleteInfo();
-            this.pathForSave = this.requestPathForSave();
-            this.printSavedOk(this.serviceForControllers.saveCompleteInfo(this.pathForSave, true, this.isWithID, true, this.isExactLimit, limit, -1, -1));
-        }
+                Printer.printInformation(this.services.getInformationToShow(package1, package2));
 
-        else {
-            String save = this.requestSaveInformation();
-            if (save.equals("1")){
-                this.printRequestPathForSave();
-                this.pathForSave = this.requestPathForSave();
-                this.printSavedOk(this.serviceForControllers.saveCompleteInfo(this.pathForSave, true, this.isWithID, true, this.isExactLimit, limit, -1, -1));
-            }
-        }
-    }
-    private void existCycle(long idPackage1, long idPackage2){
-        this.requestCyclesOption();
-        int limit = this.requestLimit();
+                this.questionSave(limit, isExactLimit, isWithID, package1, package2);
 
-        System.out.println(this.serviceForControllers.getCyclesInformation(false, isWithID, false, isExactLimit, limit, idPackage1, idPackage2));
+                int cont = this.requestContinue();
+                if (cont != 1)
+                    continueSameFile = false;
 
-        if (!this.serviceForControllers.isCompleteInfo()){
-            this.pathForSave = this.requestPathForSave();
-            this.printSavedOk(this.serviceForControllers.saveCompleteInfo(pathForSave, true, isWithID, false, isExactLimit, limit, idPackage1, idPackage2));
-        }
-
-        else {
-            String save = this.requestSaveInformation();
-            if (save.equals("1")){
-                this.printRequestPathForSave();
-                this.pathForSave = this.requestPathForSave();
-                this.printSavedOk(this.serviceForControllers.saveCompleteInfo(pathForSave, true, isWithID, false, isExactLimit, limit, idPackage1, idPackage2));
+                if (cont == 2)
+                    continueOtherFile = true;
             }
         }
     }
 
-    // REQUEST FOR THE USER
-    private int requestLimit(){
-        this.printRequestLimit();
-        int limit = this.requestIn_in();
-
-        while (!checkLimit(limit)){
-            printInvalidLimit();
-            limit = this.requestIn_in();
-        }
-
-        return limit;
+    private int requestContinue() {
+        Printer.printRequestContinue();
+        return this.requestOption(1,3);
     }
-    private void requestPath() {
-        this.printRequestPath();
-        String option = requestIn_string();
 
-        while (!checkOptionPath(option)) {
-            this.printInvalidOption();
-            option = requestIn_string();
+    private void questionSave(int limit, boolean isExactLimit, boolean isWithID, String package1, String package2) {
+        Printer.printQuestionSave();
+        int option = this.requestOption(1, 2);
+        if (option == 1){
+            String path = this.requestFileToSave();
+            this.services.saveAsTextFile(path, limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2);
         }
     }
-    private String requestNewPath(){
-        this.printRequestNewPath();
-        String path = requestIn_string();
 
-        while (!checkNewPath(path)){
-            this.printInvalidPath(path);
-            path = requestIn_string();
+    private String requestFileToSave() {
+        Printer.printRequestForSave();
+        Scanner reader = new Scanner(System.in);
+        String path = reader.nextLine();
+
+        while (!isValidFileToSavePath(path)){
+            Printer.printInvalidInputPathForSave();
+            path = reader.next();
         }
 
         return path;
     }
-    private String requestAction() {
-        this.printActionsOptions();
-        String option = requestIn_string();
 
-        while (!(option.equals("1") || option.equals("2"))) {
-            this.printInvalidOption();
-            option = requestIn_string();
-        }
+    private boolean isValidFileToSavePath(String path) {
+        File f = new File(path);
+        boolean exist = f.exists();
+        boolean directory = f.isDirectory();
 
-        return option;
-    }
-    private void requestCyclesOption(){
-        this.printCyclesOption();
-        String option = requestIn_string();
-
-        while (!checkOptionCycle(option)) {
-            this.printInvalidOption();
-            option = requestIn_string();
-        }
-    }
-    private String requestPathForSave(){
-        this.printRequestPathForSave();
-        String option = requestIn_string();
-
-        while (!(this.checkPathForSave(option))) {
-            this.printInvalidPathForSave();
-            option = requestIn_string();
-        }
-
-        return option;
-    }
-    private String requestSaveInformation(){
-        this.printOptionForSave();
-        String option = this.requestIn_string();
-
-        while (!(option.equals("1") || option.equals("2"))){
-            this.printInvalidOption();
-            option = this.requestIn_string();
-        }
-
-        return option;
-    }
-    private long requestPackageID(String order){
-        this.printRequestPackageID(order);
-        int id = this.requestIn_in();
-
-        while (id < 0 || id > this.serviceForControllers.getNumberOfPackages()){
-            printInvalidLimit();
-            id = this.requestIn_in();
-        }
-
-        return (long) id;
+        return exist && directory;
     }
 
-    // REQUEST IN
-    private int requestIn_in(){
+    private String requestPackage(int number, boolean isWithID) {
+        Printer.printRequestPackage(number, isWithID);
         Scanner reader = new Scanner(System.in);
-        int in = 0;
-        try{
-            in =  reader.nextInt();
-        } catch (InputMismatchException ime){
-            System.out.println("Entrada Invalida");
+        String in = reader.nextLine();
+
+        if (isWithID){
+            int entry = this.getValidPackage(in);
+            while (entry == INVALID_OPTION){
+                Printer.printInvalidOption();
+                in = reader.nextLine();
+                entry = this.getValidPackage(in);
+            }
+
+            return String.valueOf(entry);
+        }
+
+        while (!this.services.existPackage(in)){
+                Printer.printInvalidOption();
+                in = reader.nextLine();
         }
 
         return in;
     }
-    private String requestIn_string() {
+
+    private int getValidPackage(String in) {
+        try {
+            int option = Integer.parseInt(in);
+            if (option >= 0 && option <= this.services.getNumberOfPackages())
+                return option;
+            return INVALID_OPTION;
+
+        } catch (NumberFormatException e){
+            return INVALID_OPTION;
+        }
+    }
+
+    private boolean requestView() {
+        Printer.printRequestIsWithID();
+        return (this.requestOption(1,2) == 1);
+    }
+
+    private String requestFilePath(){
+        Printer.printRequestFilePath();
+        String path = this.getPathFromInput(this.requestOption(1, 12));
+        if (path == null)   return this.requestNewFilePath();
+        return path;
+    }
+    private String requestNewFilePath() {
+        Printer.printRequestNewFilePath();
         Scanner reader = new Scanner(System.in);
-        return reader.next();
+        String path = reader.nextLine();
+
+        while (!isValidFilePath(path)){
+            Printer.printInvalidInputPath();
+            path = reader.next();
+        }
+
+        return path;
     }
 
-    // CHECKS
-    private boolean checkLimit(int limit) {
-        boolean correct = false;
+    private int requestLimit() {
+        Printer.printRequestLimit();
+        Scanner reader = new Scanner(System.in);
+        String in = reader.next();
+        int entry = this.getValidLimit(in);
+        while (entry == INVALID_OPTION){
+            Printer.printInvalidOption();
+            in = reader.next();
+            entry = this.getValidLimit(in);
+        }
 
-        if (limit >= 3 && limit < Integer.MAX_VALUE)
-            correct = true;
-
-        return correct;
+        return entry;
     }
-    private boolean checkNewPath(String path){
+
+    private int getValidLimit(String in) {
+        try {
+            int option = Integer.parseInt(in);
+            if (option >= 3)     return option;
+            return INVALID_OPTION;
+
+        } catch (NumberFormatException e){
+            return INVALID_OPTION;
+        }
+    }
+
+    private boolean requestTypeLimit() {
+        Printer.printRequestTypeLimit();
+        return (this.requestOption(1,2) == 1);
+    }
+
+    private int requestOption(int min, int max){
+        Scanner reader = new Scanner(System.in);
+        String in = reader.next();
+        int option = this.getValidOption(in, min, max);
+        while (option == INVALID_OPTION){
+            Printer.printInvalidOption();
+            in = reader.next();
+            option = this.getValidOption(in, min, max);
+        }
+
+        return option;
+    }
+    private String getPathFromInput(int in) {
+        switch (in){
+            case 1:     return "src/main/resources/filesODEM/apache-camel-1.6.0.odem";
+            case 2:     return "src/main/resources/filesODEM/apache-camel-1.6.1.odem";
+            case 3:     return "src/main/resources/filesODEM/apache-camel-1.6.2.odem";
+            case 4:     return "src/main/resources/filesODEM/apache-camel-2.0.0.odem";
+            case 5:     return "src/main/resources/filesODEM/apache-cxf-2.0.6.odem";
+            case 6:     return "src/main/resources/filesODEM/apache-cxf-2.1.1.odem";
+            case 7:     return "src/main/resources/filesODEM/db-derby-10.8.1.2.odem";
+            case 8:     return "src/main/resources/filesODEM/db-derby-10.9.1.0.odem";
+            case 9:     return "src/main/resources/filesODEM/hibernate-core-4.0.0.Final.odem";
+            case 10:    return "src/main/resources/filesODEM/hibernate-core-4.1.0.Final.odem";
+            case 11:    return "src/main/resources/filesODEM/hibernate-core-4.2.0.Final.odem";
+            default:    return null;
+        }
+    }
+    private int getValidOption(String entry, int min, int max){
+        try {
+            int option = Integer.parseInt(entry);
+            if (option >= min && option <= max)     return option;
+            return INVALID_OPTION;
+
+        } catch (NumberFormatException e){
+            return INVALID_OPTION;
+        }
+    }
+    private boolean isValidFilePath(String path){
         String regularExpression = "(.*?)\\.(ODEM|odem)$";
         boolean isODEM = Pattern.matches(regularExpression, path);
         File f = new File(path);
         boolean exist = f.exists();
         return isODEM && exist;
-    }
-    private boolean checkPathForSave(String path){
-        File directory = new File(path);
-        return directory.exists() && directory.isDirectory();
-    }
-    private boolean checkOptionPath(String option){
-        boolean isSelected = false;
-
-        switch (option){
-            case "0":
-                isSelected = true;
-                this.path = null;
-                break;
-
-            case "1":
-                this.path = "src/main/resources/filesODEM/apache-camel-1.6.0.odem";
-                isSelected = true;
-                break;
-
-            case "2":
-                this.path = "src/main/resources/filesODEM/apache-camel-1.6.1.odem";
-                isSelected = true;
-                break;
-
-            case "3":
-                this.path = "src/main/resources/filesODEM/apache-camel-1.6.2.odem";
-                isSelected = true;
-                break;
-
-            case "4":
-                this.path = "src/main/resources/filesODEM/apache-camel-2.0.0.odem";
-                isSelected = true;
-                break;
-
-            case "5":
-                this.path = "src/main/resources/filesODEM/apache-cxf-2.0.6.odem";
-                isSelected = true;
-                break;
-
-            case "6":
-                this.path = "src/main/resources/filesODEM/apache-cxf-2.1.1.odem";
-                isSelected = true;
-                break;
-
-            case "7":
-                this.path = "src/main/resources/filesODEM/db-derby-10.8.1.2.odem";
-                isSelected = true;
-                break;
-
-            case "8":
-                this.path = "src/main/resources/filesODEM/db-derby-10.9.1.0.odem";
-                isSelected = true;
-                break;
-
-            case "9":
-                this.path = "src/main/resources/filesODEM/hibernate-core-4.0.0.Final.odem";
-                isSelected = true;
-                break;
-
-            case "10":
-                this.path = "src/main/resources/filesODEM/hibernate-core-4.1.0.Final.odem";
-                isSelected = true;
-                break;
-
-            case "11":
-                this.path = "src/main/resources/filesODEM/hibernate-core-4.2.0.Final.odem";
-                isSelected = true;
-                break;
-
-            default:
-                this.path = null;
-                break;
-        }
-
-        return isSelected;
-    }
-    private boolean checkOptionCycle(String option){
-        boolean isSelected = false;
-        switch (option){
-            case "1":
-                this.isExactLimit = true;
-                this.isWithID = true;
-                isSelected = true;
-                break;
-
-            case "2":
-                this.isWithID = false;
-                this.isExactLimit = true;
-                isSelected = true;
-                break;
-
-            case "3":
-                this.isWithID = true;
-                this.isExactLimit = false;
-                isSelected = true;
-                break;
-
-            case "4":
-                this.isWithID = false;
-                this.isExactLimit = false;
-                isSelected = true;
-                break;
-        }
-
-        return isSelected;
-    }
-
-    // PRINTS
-    private void printCyclesInfo(){
-        System.out.println("INFO");
-        System.out.println("    Tiempo de Tarjan: " + this.serviceForControllers.getTarjanTime()+ " ms");
-        System.out.println("    Cant. de ciclos: "  + this.serviceForControllers.getNumberOfCycles());
-        System.out.println("    Cant. de paquetes: "    + this.serviceForControllers.getNumberOfPackages());
-        System.out.println("    Cant. de relaciones entre paquetes: "   + this.serviceForControllers.getNumberOfEdges());
-    }
-    private void printRequestPath(){
-        System.out.println(
-                        "\nIndique de qué sistema quiere ver ciclos\n" +
-                        "   (0)    INGRESAR RUTA de un archivo ODEM\n"+
-                        "   (1)    apache-camel-1.6.0.odem\n" +
-                        "   (2)    apache-camel-1.6.1.odem\n" +
-                        "   (3)    apache-camel-1.6.2.odem\n" +
-                        "   (4)    apache-camel-2.0.0.odem\n" +
-                        "   (5)    apache-cxf-2.0.6.odem\n" +
-                        "   (6)    apache-cxf-2.1.1.odem\n" +
-                        "   (7)    db-derby-10.8.1.2.odem\n" +
-                        "   (8)    db-derby-10.9.1.0.odem\n" +
-                        "   (9)    hibernate-core-4.0.0.Final.odem\n" +
-                        "   (10)   hibernate-core-4.1.0.Final.odem\n" +
-                        "   (11)   hibernate-core-4.2.0.Final.odem\n"
-        );
-    }
-    private void printCyclesOption(){
-        System.out.println(
-                "\nVer ciclos con ...\n" +
-                        "   (1)    ... límite exacto    [mostrando IDENTIFICADOR]\n" +
-                        "   (2)    ... limite exacto    [mostrando NOMBRE]\n" +
-                        "   (3)    ... limite máximo    [mostrando IDENTIFICADOR]\n" +
-                        "   (4)    ... limite máximo    [mostrando NOMBRE]\n"
-        );
-    }
-    private void printOptionForSave(){
-        System.out.println("\n¿Quiere guardar los resultados?");
-        System.out.println("    (1) SÍ");
-        System.out.println("    (2) NO");
-    }
-    private void printRequestLimit() {
-        System.out.println("Ingrese el límite (tiene que ser > 2):");
-    }
-    private void printRequestNewPath(){
-        System.out.println(
-                "\nIngrese la ruta (que no contenga espacios en blanco) del archivo ODEM");
-    }
-    private void printIncompleteInfo(){
-        System.out.println("\nLa cantidad de ciclos exedió el límite que se puede mostrar.");
-    }
-    private void printActionsOptions() {
-        System.out.println(
-                "\n¿Qué desea hacer?\n" +
-                        "   (1) Visualizar dependencias cíclicas de un sistema\n" +
-                        "   (2) Comprobar si un par de paquetes de un sistema pertenecen a un mismo ciclo de dependencias\n"
-        );
-    }
-    private void printInvalidPathForSave(){
-        System.out.println("La ruta ingresada NO corresponde a un directorio. Intente nuevamente.");
-    }
-    private void printRequestPathForSave(){
-        System.out.println("Ingrese la ruta de un DIRECTORIO dónde guardar la información.");
-    }
-    private void printInvalidPath(String path){
-        System.out.println("La ruta ingresada \""+ path +"\" es INVALIDA. Intente nuevamente.");
-    }
-    private void printSavedOk(boolean isSavedOk){
-        if (isSavedOk)
-            System.out.println("\nInformación guardada correctamente");
-        else
-            System.out.println("No se pudo guardar la información.");
-    }
-    private void printReferences(String references){
-        System.out.println(
-                "A continuación se mostrará cada paquete son su identificador.\n" +
-                "Luego se solicitará que ingrese el identificador de los dos paquetes a chequear si pertenecen a un mismo ciclo de dependencias."
-        );
-        System.out.println("REFERENCIAS");
-        System.out.println(references);
-    }
-    private void printRequestPackageID(String order){
-        System.out.println("Ingrese el ID del " + order + " paquete: ");
-    }
-    private void printInvalidOption(){
-        System.out.println("Opción INVALIDA. Intente nuevamente.");
-    }
-    private void printInvalidLimit(){
-        System.out.println("Límite INVALIDO. Intente nuevamente.");
     }
 }

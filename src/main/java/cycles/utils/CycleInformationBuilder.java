@@ -17,16 +17,27 @@ public abstract class CycleInformationBuilder {
 
     public abstract String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow);
 
-    public void saveInfoInTextFile(boolean isWithID, boolean isExactLimit, int limit, int maxNumberOfCyclesToShow, PrintWriter wr){
+    public void saveInfoInTextFile(boolean isWithID, boolean isExactLimit, int limit, int maxNumberOfCyclesToShow, PrintWriter wr, String references){
         wr.write(this.getHeaderToFile());
-        wr.write(this.getInfoToFile());
+        wr.write("\n   ********** CICLOS **********\n\n");
         wr.write(this.getSubtitleToFile(isExactLimit, limit));
         wr.write(this.informationToShow.toString());
-
         if (!isCompleteInformation){
-            wr.write("\n");
             this.toCompleteFile(maxNumberOfCyclesToShow, isWithID, wr);
         }
+
+        wr.write("\n\n\n");
+
+        if (isWithID){
+            wr.write("   ********** REFERENCIAS **********\n\n");
+            wr.write(references);
+            wr.write("\n\n\n");
+        }
+
+
+        wr.write("   ********** INFORMACIÓN **********\n\n");
+        wr.write(this.getInfoToFile());
+
     }
 
     protected abstract void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr);
@@ -51,33 +62,31 @@ public abstract class CycleInformationBuilder {
                 "Guarde la salida en un archivo para visualizarla completa.\n\n");
     }
     private String getHeaderToFile(){
-        return (
-                "TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n" +
-                        "\n" +
-                        "Jeremías Brisuela  jere05.mdq@gmail.com\n" +
-                        "Noelia Fluxá       noefluxa@gmail.com\n" +
-                        "\n" +
-                        "*****************************************\n");
+        StringBuilder header = new StringBuilder();
+        header.append("------------------------------------------\n");
+        header.append("TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n\n");
+        header.append("Jeremías Brisuela  jere05.mdq@gmail.com\n");
+        header.append("Noelia Fluxá       noefluxa@gmail.com\n");
+        header.append("------------------------------------------\n\n");
+        return header.toString();
     }
-    private String getInfoToFile(){
+    public String getInfoToFile(){
         StringBuilder info = new StringBuilder();
 
-        info.append("\n\n");
-        info.append("Ruta de archivo:          ");
+        info.append("   Ruta de archivo:          ");
         info.append(this.cyclesService.getPath());
         info.append("\n");
-        info.append("Cantidad de ciclos:       ");
+        info.append("   Cantidad de ciclos:       ");
         info.append(String.valueOf(this.getNumberOfCycles()));
         info.append("\n");
-        info.append("Tiempo de Tarjan (ms):    ");
+        info.append("   Tiempo de Tarjan (ms):    ");
         info.append(String.valueOf(this.cyclesService.getTarjanTime()));
         info.append("\n");
-        info.append("Cantidad de paquetes:     ");
+        info.append("   Cantidad de paquetes:     ");
         info.append(String.valueOf(this.cyclesService.getNumberOfPackages()));
         info.append("\n");
-        info.append("Cantidad de dependencias: ");
+        info.append("   Cantidad de dependencias: ");
         info.append(String.valueOf(this.cyclesService.getNumberOfDependencies()));
-        info.append("\n\n");
 
         return info.toString();
     }
@@ -112,6 +121,7 @@ public abstract class CycleInformationBuilder {
 
         this.processCycles(0, maxNumberOfCyclesToShow, isWithID, null);
         info.append(this.informationToShow);
+        info.append("   ...");
 
         return info.toString();
     }

@@ -10,15 +10,49 @@ public class ParticularCycles extends CycleInformationBuilder {
     private String package1;
     private String package2;
     private int lastCycleView;
-    private boolean isViewFull;
 
     public ParticularCycles(CyclesService cyclesService) {
         super(cyclesService);
         this.cyclesAmount = 0;
+        this.lastCycleView = 0;
     }
 
-    @Override
-    public String getCycleInformation(long[] cycle, int index, boolean isWithID) {
+    @Override    public String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow) {
+        this.cyclesAmount = 0;
+        int cyclesAvailable = this.cyclesService.getNumberOfCycles();
+
+        if (cyclesAvailable > maxNumberOfCyclesToShow){
+            int until = 0;
+            int viewAvailable = maxNumberOfCyclesToShow;
+
+            while (viewAvailable>0 && cyclesAvailable>0) {
+                int since = until;
+
+                if (viewAvailable > cyclesAvailable)    until = since+cyclesAvailable;
+                else                                    until += viewAvailable;
+
+                this.processCycles(since, until, isWithID, null);
+                viewAvailable = maxNumberOfCyclesToShow - this.cyclesAmount;
+                cyclesAvailable -= until-since;
+            }
+
+            this.isCompleteInformation = (cyclesAvailable==0);
+
+            StringBuilder infoToShow = new StringBuilder();
+            if (!this.isCompleteInformation){
+                infoToShow.append(this.getHeaderLimitInfo());
+                this.lastCycleView = until;
+            }
+
+            infoToShow.append(this.informationToShow);
+            if (!this.isCompleteInformation)                infoToShow.append("   ...");
+            return infoToShow.toString();
+        }
+
+        this.isCompleteInformation = true;
+        return this.fullInformationToShow(isWithID);
+    }
+    @Override    public String getCycleInformation(long[] cycle, int index, boolean isWithID) {
         StringBuilder info = new StringBuilder();
 
         String infoCycleCommon = this.getInfoAboutCycle(cycle, isWithID, this.package1, this.package2);
@@ -34,17 +68,13 @@ public class ParticularCycles extends CycleInformationBuilder {
 
         return info.toString();
     }
-
-    @Override
-    public int getNumberOfCycles() {
+    @Override    public int getNumberOfCycles() {
         return this.cyclesAmount;
     }
-
-    @Override
-    protected String getSubtitleToFile(boolean isExactLimit, int limit) {
+    @Override    protected String getSubtitleToFile(boolean isExactLimit, int limit) {
         StringBuilder info = new StringBuilder();
 
-        info.append("Ciclos entre '");
+        info.append("   Ciclos entre '");
         info.append(this.package1);
         info.append("' y '");
         info.append(this.package2);
@@ -52,9 +82,12 @@ public class ParticularCycles extends CycleInformationBuilder {
         if (!isExactLimit)  info.append(", al menos, ");
         else                info.append(" ");
         info.append(String.valueOf(limit));
-        info.append(" paquetes:\n");
+        info.append(" paquetes:\n\n");
 
         return info.toString();
+    }
+    @Override    protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
+        this.processCycles(this.lastCycleView, this.cyclesService.getNumberOfCycles(), isWithID, wr);
     }
 
     private String getInfoAboutCycle(long[] cycle, boolean isWithID, String package1, String package2){
@@ -81,54 +114,10 @@ public class ParticularCycles extends CycleInformationBuilder {
 
         return null;
     }
-
     public void setPackage1(String package1) {
         this.package1 = package1;
     }
-
     public void setPackage2(String package2) {
         this.package2 = package2;
-    }
-
-    public void resetCyclesAmount() {
-        this.cyclesAmount = 0;
-    }
-
-    @Override
-    public String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow) {
-        this.cyclesAmount = 0;
-        int cyclesAvailable = this.cyclesService.getNumberOfCycles();
-
-        if (cyclesAvailable > maxNumberOfCyclesToShow){
-            int until = 0;
-            int viewAvailable = maxNumberOfCyclesToShow;
-
-            while (viewAvailable>0 && cyclesAvailable>0){
-                int since = until;
-                until += viewAvailable;
-                this.processCycles(since, until, isWithID, null);
-                viewAvailable = maxNumberOfCyclesToShow - this.cyclesAmount;
-                cyclesAvailable -= until-since;
-            }
-
-            this.isCompleteInformation = (cyclesAvailable==0);
-
-            StringBuilder infoToShow = new StringBuilder();
-            if (!this.isCompleteInformation){
-                infoToShow.append(this.getHeaderLimitInfo());
-                this.lastCycleView = until;
-            }
-
-            infoToShow.append(this.informationToShow);
-            return infoToShow.toString();
-        }
-
-        this.isCompleteInformation = true;
-        return this.fullInformationToShow(isWithID);
-    }
-
-    @Override
-    protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
-        this.processCycles(this.lastCycleView, this.cyclesService.getNumberOfCycles(), isWithID, wr);
     }
 }

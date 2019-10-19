@@ -12,6 +12,8 @@ public class Tarjan {
     private int nbits;
     private CycleCompressor cycleCompressor;
     private int numberOfCycles;
+    private String package1;
+    private String package2;
 
     public Tarjan() {
         reset();

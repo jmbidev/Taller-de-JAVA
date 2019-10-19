@@ -1,7 +1,6 @@
 package cycles;
 
 import cycles.controllers.ConsoleController;
-import cycles.controllers.ConsoleController2;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +10,7 @@ import javafx.stage.Stage;
 import java.util.Scanner;
 
 public class Main extends Application {
-    private static ConsoleController2 consoleController = new ConsoleController2();
+    private static ConsoleController consoleController = new ConsoleController();
 
     public static void main(String[] args) {
         printHeader();

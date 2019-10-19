@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServicesForGuiController {
+public class ServicesForControllers {
     public static final String NO_PACKAGE = "";
     private CyclesService cyclesService;
     private String references, cyclesInformationToShow;
@@ -19,7 +19,7 @@ public class ServicesForGuiController {
     private GeneralCycles generalCycles;
     private ParticularCycles particularCycles;
 
-    public ServicesForGuiController(String path) {
+    public ServicesForControllers(String path) {
         this.cyclesService = new CyclesService(path);
         this.cyclesService.runSAX();
         this.packagesID = new ArrayList<>();
@@ -71,7 +71,7 @@ public class ServicesForGuiController {
         return this.references;
     }
 
-    public String getInfoToShow(int limit, boolean isExactLimit, boolean isWithID, int maxNumberOfCyclesToShow, String package1, String package2) {
+    public String getCyclesToShow(int limit, boolean isExactLimit, boolean isWithID, int maxNumberOfCyclesToShow, String package1, String package2) {
         this.cyclesService.runTarjan(limit, isExactLimit);
         return this.getCycleInformationBuilder(package1, package2).getInformationToShow(isWithID, maxNumberOfCyclesToShow);
     }
@@ -85,13 +85,7 @@ public class ServicesForGuiController {
             BufferedWriter bw = new BufferedWriter(w);
             PrintWriter wr = new PrintWriter(bw);
 
-            this.getCycleInformationBuilder(package1, package2).saveInfoInTextFile(isWithID, isExactLimit, limit, maxNumberOfCyclesToShow, wr);
-
-            if (isWithID){
-                wr.write("\n\n");
-                wr.write("Referencias:\n");
-                wr.write(this.getReferences());
-            }
+            this.getCycleInformationBuilder(package1, package2).saveInfoInTextFile(isWithID, isExactLimit, limit, maxNumberOfCyclesToShow, wr, this.references);
 
             wr.close();
             bw.close();
@@ -113,5 +107,17 @@ public class ServicesForGuiController {
     public void resetCycleInformationBuilders(){
         this.generalCycles = new GeneralCycles(this.cyclesService);
         this.particularCycles = new ParticularCycles(this.cyclesService);
+    }
+
+    public List<String> getPackagesName() {
+        return this.packagesName;
+    }
+
+    public boolean existPackage(String packageName) {
+        return this.packagesName.contains(packageName);
+    }
+
+    public String getInformationToShow(String package1, String package2){
+        return this.getCycleInformationBuilder(package1, package2).getInfoToFile();
     }
 }

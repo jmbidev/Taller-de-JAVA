@@ -1,6 +1,6 @@
 package cycles.controllers;
 
-import cycles.services.ServicesForGuiController;
+import cycles.services.ServicesForControllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int MAX_NUMBER_OF_CYCLES_TO_SHOW = 150;
-    private ServicesForGuiController services;
+    private ServicesForControllers services;
     private Window stage;
 
     // ********** Main **********
@@ -58,7 +58,7 @@ public class GuiController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null){
             String path = selectedFile.getPath();
-            this.services = new ServicesForGuiController(path);
+            this.services = new ServicesForControllers(path);
 
             this.path.setText(path);
             this.path.setDisable(true);
@@ -185,7 +185,7 @@ public class GuiController implements Initializable {
 
 
         if (allCycles.isSelected()){
-            this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForGuiController.NO_PACKAGE, ServicesForGuiController.NO_PACKAGE));
+            this.answer.setText(this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForControllers.NO_PACKAGE, ServicesForControllers.NO_PACKAGE));
             this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(false)));
             this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
         }
@@ -194,7 +194,7 @@ public class GuiController implements Initializable {
             String package1 = this.package1.getValue();
             String package2 = this.package2.getValue();
             if (package1 != null && package2 != null) {
-                this.answer.setText(this.services.getInfoToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
+                this.answer.setText(this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
                 int amountCycles = this.services.getNumberOfCycles(true);
                 if ( amountCycles == MAX_NUMBER_OF_CYCLES_TO_SHOW)
                     this.cyclesAmount.setText(MAX_NUMBER_OF_CYCLES_TO_SHOW+"+");
@@ -224,7 +224,7 @@ public class GuiController implements Initializable {
                 this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(true)));
             }
 
-            else    this.services.saveAsTextFile(path, limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForGuiController.NO_PACKAGE, ServicesForGuiController.NO_PACKAGE);
+            else    this.services.saveAsTextFile(path, limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForControllers.NO_PACKAGE, ServicesForControllers.NO_PACKAGE);
         }
 
 
