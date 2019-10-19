@@ -13,15 +13,20 @@ public class Main extends Application {
     private static ConsoleController consoleController = new ConsoleController();
 
     public static void main(String[] args) {
-        printHeader();
-        String option = runExecutionOptions();
+
+        int option = 1;
+
+        if (args.length > 0)
+            if (args[0].equals("gui"))
+                option = 2;
 
         switch (option){
-            case "1":
+            case 1:
+                printHeader();
                 Main.consoleController.runConsole();
                 break;
 
-            case "2":
+            case 2:
                 launch(args);
                 break;
         }

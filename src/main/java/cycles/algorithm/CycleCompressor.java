@@ -1,5 +1,6 @@
 package cycles.algorithm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CycleCompressor {
@@ -32,27 +33,29 @@ public class CycleCompressor {
     }
 
     public long[] decompress(byte[] compressCycle){
-        double div = (compressCycle.length * BLOCK_SIZE) / (double) nBits;
-        int size = (int) Math.floor(div);
-        long[] values = new long[size];
+        List<Long> values = new ArrayList<>();
 
         int left = nBits;
         this.index = 0;
         this.remain = BLOCK_SIZE;
 
-        int i = 0;
         long firstValue = this.decompressValue(compressCycle, left);
-        values[i] = firstValue;
-        i++;
+        values.add(firstValue);
 
         long value;
         do {
             value = decompressValue(compressCycle, nBits);
-            values[i] = value;
-            i++;
+            values.add(value);
         } while ((firstValue != value));
 
-        return values;
+        long [] arrayLong = new long[values.size()];
+
+        int i = 0;
+        for(Long l : values) {
+            arrayLong[i] = l.longValue();
+            i++;
+        }
+        return arrayLong;
     }
 
     private void compressValue(byte[] compressCycle, long value, int left){
