@@ -90,4 +90,13 @@ public class Printer {
                         "   (3) Terminar\n"
         );
     }
+    public static void printHeader() {
+        StringBuilder header = new StringBuilder();
+        header.append("------------------------------------------\n");
+        header.append("TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n\n");
+        header.append("Jeremías Brisuela  jere05.mdq@gmail.com\n");
+        header.append("Noelia Fluxá       noefluxa@gmail.com\n");
+        header.append("------------------------------------------\n");
+        System.out.print(header);
+    }
 }

@@ -18,6 +18,7 @@ public class ConsoleController {
     }
 
     public void runConsole() {
+        Printer.printHeader();
         boolean continueOtherFile = true;
 
         while (continueOtherFile){

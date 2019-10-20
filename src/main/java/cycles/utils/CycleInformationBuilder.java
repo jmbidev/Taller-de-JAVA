@@ -76,7 +76,7 @@ public abstract class CycleInformationBuilder {
         header.append("Noelia Fluxá       noefluxa@gmail.com\n");
         header.append("------------------------------------------\n\n");
         return header.toString();
-    }
+}
     protected String getInfoAboutPackage(long packageID, boolean isWithID){
         if (isWithID)
             return String.valueOf(packageID);

@@ -1,6 +1,7 @@
 package cycles;
 
 import cycles.controllers.ConsoleController;
+import cycles.utils.Printer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,7 +23,6 @@ public class Main extends Application {
 
         switch (option){
             case 1:
-                printHeader();
                 Main.consoleController.runConsole();
                 break;
 
@@ -32,16 +32,6 @@ public class Main extends Application {
         }
 
         System.exit(0);
-    }
-
-    private static void printHeader(){
-        System.out.println(
-            "TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n" +
-            "\n" +
-            "Jeremías Brisuela  jere05.mdq@gmail.com\n" +
-            "Noelia Fluxá       noefluxa@gmail.com\n" +
-            "\n" +
-            "*****************************************\n");
     }
 
     private static String runExecutionOptions() {
