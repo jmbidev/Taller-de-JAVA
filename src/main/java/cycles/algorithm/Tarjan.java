@@ -9,11 +9,8 @@ public class Tarjan {
     private Deque<Vertex<String>> pointStack;
     private Deque<Vertex<String>> markedStack;
     private Set<Vertex<String>> markedSet;
-    private int nbits;
     private CycleCompressor cycleCompressor;
     private int numberOfCycles;
-    private String package1;
-    private String package2;
 
     public Tarjan() {
         reset();

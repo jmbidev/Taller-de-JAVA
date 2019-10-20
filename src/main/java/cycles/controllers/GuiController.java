@@ -64,6 +64,7 @@ public class GuiController implements Initializable {
             this.path.setDisable(true);
             this.resetTool.setDisable(false);
             this.pane2.setDisable(false);
+            this.searchFile.setDisable(true);
             this.references.setText(this.services.getReferences());
             this.packagesAmount.setText(String.valueOf(this.services.getNumberOfPackages()));
             this.dependenciesAmount.setText(String.valueOf(this.services.getNumberOfDependencies()));
