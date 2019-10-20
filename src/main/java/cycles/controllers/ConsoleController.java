@@ -21,38 +21,39 @@ public class ConsoleController {
         Printer.printHeader();
         boolean continueOtherFile = true;
 
-        while (continueOtherFile){
+        while (continueOtherFile) {
             continueOtherFile = false;
             this.path = this.requestFilePath();
             this.services = new ServicesForControllers(this.path);
             boolean continueSameFile = true;
 
-            while (continueSameFile){
+            while (continueSameFile) {
+                Printer.printTitle("configuration");
                 this.services.resetCycleInformationBuilders();
-                Printer.printActionsOptions();
-                int action = this.requestOption(2);
-
-                boolean isExactLimit = this.requestTypeLimit();
                 int limit = this.requestLimit();
-
+                boolean isExactLimit = this.requestTypeLimit();
                 boolean isWithID = this.requestView();
-                String package1, package2;
-                if (action == 2){
-                    if (isWithID){
-                        Printer.printReferences(this.services.getReferences());
-                    }
-                    else    Printer.printPackageNames(this.services.getPackagesName());
+                int action = this.requestAction();
+                String package1 = ServicesForControllers.NO_PACKAGE;
+                String package2 = ServicesForControllers.NO_PACKAGE;
+                if (action == 2) {
+                    if (isWithID) {
+                        Printer.printReferences("Referencias", this.services.getReferences());
+                    } else Printer.printPackageNames(this.services.getPackagesName());
                     package1 = this.requestPackage(1, isWithID);
                     package2 = this.requestPackage(2, isWithID);
                 }
-                else{
-                    package1 = ServicesForControllers.NO_PACKAGE;
-                    package2 = ServicesForControllers.NO_PACKAGE;
-                }
 
                 String info = this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2);
+                Printer.printTitle("ciclos");
                 Printer.printCycles(info);
 
+                if (isWithID) {
+                    Printer.printTitle("referencias");
+                    Printer.printReferences(this.services.getReferences());
+                }
+
+                Printer.printTitle("información");
                 Printer.printInformation(this.services.getInformationToShow(package1, package2));
 
                 this.questionSave(limit, isExactLimit, isWithID, package1, package2);
@@ -67,14 +68,21 @@ public class ConsoleController {
         }
     }
 
+    private int requestAction() {
+        Printer.printActionsOptions();
+        return this.requestOption(2);
+    }
+
     //AUXILIARY METHODS
     private int requestLimit() {
         Printer.printRequestLimit();
         Scanner reader = new Scanner(System.in);
+        Printer.waitingAnswer();
         String in = reader.next();
         int entry = this.getValidInt(in, 3, Integer.MAX_VALUE);
         while (entry == INVALID_OPTION){
-            Printer.printInvalidOption();
+            Printer.printInvalidLimit();
+            Printer.waitingAnswer();
             in = reader.next();
             entry = this.getValidInt(in, 3, Integer.MAX_VALUE);
         }
@@ -87,10 +95,12 @@ public class ConsoleController {
     }
     private int requestOption(int max){
         Scanner reader = new Scanner(System.in);
+        Printer.waitingAnswer();
         String in = reader.next();
         int option = this.getValidInt(in, 1, max);
         while (option == INVALID_OPTION){
             Printer.printInvalidOption();
+            Printer.waitingAnswer();
             in = reader.next();
             option = this.getValidInt(in, 1, max);
         }
@@ -153,11 +163,14 @@ public class ConsoleController {
 
     private String requestFilePath(){
         Printer.printRequestFilePath();
+
         Scanner reader = new Scanner(System.in);
+        Printer.waitingAnswer();
         String path = reader.nextLine();
 
         while (!isValidFilePath(path)){
             Printer.printInvalidInputPath();
+            Printer.waitingAnswer();
             path = reader.nextLine();
         }
 
@@ -166,11 +179,13 @@ public class ConsoleController {
     private String requestFileToSave() {
         Printer.printRequestForSave();
         Scanner reader = new Scanner(System.in);
+        Printer.waitingAnswer();
         String path = reader.nextLine();
 
         while (!isValidFileToSavePath(path)){
             Printer.printInvalidInputPathForSave();
-            path = reader.next();
+            Printer.waitingAnswer();
+            path = reader.nextLine();
         }
 
         return path;
@@ -195,12 +210,14 @@ public class ConsoleController {
     private String requestPackage(int number, boolean isWithID) {
         Printer.printRequestPackage(number, isWithID);
         Scanner reader = new Scanner(System.in);
+        Printer.waitingAnswer();
         String in = reader.nextLine();
 
         if (isWithID){
             int entry = this.getValidPackage(in);
             while (entry == INVALID_OPTION){
                 Printer.printInvalidOption();
+                Printer.waitingAnswer();
                 in = reader.nextLine();
                 entry = this.getValidPackage(in);
             }
@@ -210,6 +227,7 @@ public class ConsoleController {
 
         while (!this.services.existPackage(in)){
             Printer.printInvalidOption();
+            Printer.waitingAnswer();
             in = reader.nextLine();
         }
 

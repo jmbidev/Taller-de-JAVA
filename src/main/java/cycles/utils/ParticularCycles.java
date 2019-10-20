@@ -115,7 +115,7 @@ public class ParticularCycles extends CycleInformationBuilder {
             info.append(currentPackage);
 
             if (i != cycleSize-1)
-                info.append(" → ");
+                info.append(" -> ");
         }
 
         if (isPackage1 && isPackage2)   return info.toString();

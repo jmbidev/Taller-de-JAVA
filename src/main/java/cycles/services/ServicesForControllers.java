@@ -101,7 +101,7 @@ public class ServicesForControllers {
             this.packagesID.add(String.valueOf(id));
             this.packagesName.add(name);
             references.append(id);
-            references.append(" → ");
+            references.append(" -> ");
             references.append(name);
 
             if (i != 0)

@@ -113,7 +113,7 @@ public abstract class CycleInformationBuilder {
             info.append(this.getInfoAboutPackage(cycle[i], isWithID));
 
             if (i != cycleSize-1)
-                info.append(" → ");
+                info.append(" -> ");
         }
 
         return info.toString();
