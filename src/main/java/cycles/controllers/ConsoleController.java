@@ -152,8 +152,14 @@ public class ConsoleController {
 
     private String requestFilePath(){
         Printer.printRequestFilePath();
-        String path = this.getPathFromInput(this.requestOption( 12));
-        if (path == null)   return this.requestNewFilePath();
+        Scanner reader = new Scanner(System.in);
+        String path = reader.nextLine();
+
+        while (!isValidFilePath(path)){
+            Printer.printInvalidInputPath();
+            path = reader.nextLine();
+        }
+
         return path;
     }
     private String requestFileToSave() {
@@ -168,18 +174,7 @@ public class ConsoleController {
 
         return path;
     }
-    private String requestNewFilePath() {
-        Printer.printRequestNewFilePath();
-        Scanner reader = new Scanner(System.in);
-        String path = reader.nextLine();
 
-        while (!isValidFilePath(path)){
-            Printer.printInvalidInputPath();
-            path = reader.next();
-        }
-
-        return path;
-    }
     private String getPathFromInput(int in) {
         switch (in){
             case 1:     return "src/main/resources/filesODEM/apache-camel-1.6.0.odem";
