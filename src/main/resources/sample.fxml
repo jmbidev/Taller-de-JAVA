@@ -153,7 +153,7 @@
                   <Label text="Cantidad de dependencias" GridPane.rowIndex="3" />
                   <Label text="Cantidad de paquetes" GridPane.rowIndex="2" />
                   <TextField fx:id="tarjanTime" alignment="CENTER" editable="false" prefHeight="25.0" prefWidth="84.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label prefHeight="17.0" prefWidth="200.0" text="Tiempo de Tarjan de (ms)" GridPane.rowIndex="1" />
+                  <Label prefHeight="17.0" prefWidth="200.0" text="Tiempo de Tarjan (ms)" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <ImageView fx:id="imageView_tp" fitHeight="50.0" fitWidth="228.0" layoutX="746.0" layoutY="385.0" pickOnBounds="true" preserveRatio="true">
