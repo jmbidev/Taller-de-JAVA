@@ -73,11 +73,15 @@ public class ServicesForControllers {
     public String getReferences() {
         return this.references;
     }
-    public String getInformationToShow(String package1, String package2){
+    public String getInformationToShow(String package1, String package2, boolean isWithID){
         return this.getCycleInformationBuilder(package1, package2).getInfoToFile();
     }
     public String getCyclesToShow(int limit, boolean isExactLimit, boolean isWithID, int maxNumberOfCyclesToShow, String package1, String package2) {
-        this.cyclesService.runTarjan(limit, isExactLimit);
+        if (isWithID && !package1.equals(ServicesForControllers.NO_PACKAGE) && !package2.equals(ServicesForControllers.NO_PACKAGE)){
+            package1 = this.packagesName.get(Integer.valueOf(package1));
+            package2 = this.packagesName.get(Integer.valueOf(package2));
+        }
+        this.cyclesService.runTarjan(limit, isExactLimit, package1, package2);
         return this.getCycleInformationBuilder(package1, package2).getInformationToShow(isWithID, maxNumberOfCyclesToShow);
     }
 

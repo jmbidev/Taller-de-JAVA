@@ -54,7 +54,7 @@ public class ConsoleController {
                 }
 
                 Printer.printTitle("información");
-                Printer.printInformation(this.services.getInformationToShow(package1, package2));
+                Printer.printInformation(this.services.getInformationToShow(package1, package2, isWithID));
 
                 this.questionSave(limit, isExactLimit, isWithID, package1, package2);
 
@@ -191,22 +191,6 @@ public class ConsoleController {
         return path;
     }
 
-    private String getPathFromInput(int in) {
-        switch (in){
-            case 1:     return "src/main/resources/filesODEM/apache-camel-1.6.0.odem";
-            case 2:     return "src/main/resources/filesODEM/apache-camel-1.6.1.odem";
-            case 3:     return "src/main/resources/filesODEM/apache-camel-1.6.2.odem";
-            case 4:     return "src/main/resources/filesODEM/apache-camel-2.0.0.odem";
-            case 5:     return "src/main/resources/filesODEM/apache-cxf-2.0.6.odem";
-            case 6:     return "src/main/resources/filesODEM/apache-cxf-2.1.1.odem";
-            case 7:     return "src/main/resources/filesODEM/db-derby-10.8.1.2.odem";
-            case 8:     return "src/main/resources/filesODEM/db-derby-10.9.1.0.odem";
-            case 9:     return "src/main/resources/filesODEM/hibernate-core-4.0.0.Final.odem";
-            case 10:    return "src/main/resources/filesODEM/hibernate-core-4.1.0.Final.odem";
-            case 11:    return "src/main/resources/filesODEM/hibernate-core-4.2.0.Final.odem";
-            default:    return null;
-        }
-    }
     private String requestPackage(int number, boolean isWithID) {
         Printer.printRequestPackage(number, isWithID);
         Scanner reader = new Scanner(System.in);

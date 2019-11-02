@@ -185,6 +185,7 @@ public class GuiController implements Initializable {
         boolean isWithID =      this.showToID.isSelected();
 
 
+
         if (allCycles.isSelected()){
             this.answer.setText(this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, ServicesForControllers.NO_PACKAGE, ServicesForControllers.NO_PACKAGE));
             this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(false)));
@@ -192,16 +193,12 @@ public class GuiController implements Initializable {
         }
 
         else {
-            String package1 = this.package1.getValue();
-            String package2 = this.package2.getValue();
+            String package1 =       this.package1.getValue();
+            String package2 =       this.package2.getValue();
+
             if (package1 != null && package2 != null) {
                 this.answer.setText(this.services.getCyclesToShow(limit, isExactLimit, isWithID, MAX_NUMBER_OF_CYCLES_TO_SHOW, package1, package2));
-                int amountCycles = this.services.getNumberOfCycles(true);
-                if ( amountCycles == MAX_NUMBER_OF_CYCLES_TO_SHOW)
-                    this.cyclesAmount.setText(MAX_NUMBER_OF_CYCLES_TO_SHOW+"+");
-                else
-                    this.cyclesAmount.setText(String.valueOf(amountCycles));
-
+                this.cyclesAmount.setText(String.valueOf(this.services.getNumberOfCycles(true)));
                 this.tarjanTime.setText(String.valueOf(this.services.getTarjanTime()));
             }
         }

@@ -58,8 +58,19 @@ public abstract class CycleInformationBuilder {
 
         return info.toString();
     }
-    public abstract String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow);
-    public abstract int getNumberOfCycles();
+    public int getNumberOfCycles() {
+        return this.cyclesService.getNumberOfCycles();
+    }
+    public String getInformationToShow(boolean isWithID, int maxNumberOfCyclesToShow) {
+        if (this.getNumberOfCycles() > maxNumberOfCyclesToShow){
+            this.isCompleteInformation = false;
+            return this.limitInformationToShow(maxNumberOfCyclesToShow, isWithID);
+        }
+
+        this.isCompleteInformation = true;
+        return this.fullInformationToShow(isWithID);
+    }
+
 
     // AUXILIARY METHODS
     private void buildInformation(long[] cycle, int index, boolean isWithID, PrintWriter wr){
@@ -84,8 +95,6 @@ public abstract class CycleInformationBuilder {
         return this.cyclesService.getPackages().get(packageID);
     }
 
-    protected abstract String getCycleInformation(long[] cycle, int index, boolean isWithID);
-    protected abstract void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr);
     protected abstract String getSubtitleToFile(boolean isExactLimit, int limit);
     protected void processCycles(int since, int until, boolean isWithID, PrintWriter wr){
         List<byte[]> compressCycles = this.cyclesService.getCycles();
@@ -118,4 +127,32 @@ public abstract class CycleInformationBuilder {
 
         return info.toString();
     }
+
+    public String getCycleInformation(long[] cycle, int index, boolean isWithID){
+        StringBuilder info = new StringBuilder();
+
+        info.append(this.getInfoAboutCycle(cycle, isWithID));
+
+        if (index != this.cyclesService.getNumberOfCycles()-1)
+            info.append("\n");
+
+        return info.toString();
+    }
+
+    private String limitInformationToShow(int maxNumberOfCyclesToShow, boolean isWithID){
+        StringBuilder info = new StringBuilder();
+        info.append(this.getHeaderLimitInfo());
+
+        this.processCycles(0, maxNumberOfCyclesToShow, isWithID, null);
+        info.append(this.informationToShow);
+        info.append("   ...");
+
+        return info.toString();
+    }
+
+    protected void toCompleteFile(int maxNumberOfCyclesToShow, boolean isWithID, PrintWriter wr) {
+        processCycles(maxNumberOfCyclesToShow, this.getNumberOfCycles(), isWithID, wr);
+    }
+
+
 }

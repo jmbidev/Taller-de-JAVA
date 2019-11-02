@@ -123,13 +123,13 @@ public class CyclesService {
      * @param limit         Specifies nodes amount in the cycles.
      * @param isExactLimit  Specifies if {@code limit} is exact (if isn't exact limit is interpreted as a maximum limit).
      */
-    public void runTarjan(int limit, boolean isExactLimit){
+    public void runTarjan(int limit, boolean isExactLimit, String package1, String package2){
 
         long startTime = System.currentTimeMillis();
 
         Tarjan tj = new Tarjan();
 
-        this.cycles = tj.findCycles(graph, limit, isExactLimit);
+        this.cycles = tj.findCycles(graph, limit, isExactLimit, package1, package2);
         this.cycleCompressor = tj.getCycleCompressor();
         this.numberOfCycles = tj.getNumberOfCycles();
 
