@@ -8,6 +8,12 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.util.*;
 
+/**
+ * It is the tool provider.
+ * Provides information about the cycles between packages.
+ * @author Jeremías Brisuela & Noelia Fluxá
+ * @version 1.1
+ */
 public class CyclesService {
     private String path;
     private Map<String, Set<String>> dependencies;
@@ -15,9 +21,8 @@ public class CyclesService {
     private List<byte[]> cycles;
     private long tarjanTime;
     private CycleCompressor cycleCompressor;
-    private HashMap<Long, String> vertexes;
+    private HashMap<Long, String> packages;
     private int numberOfCycles;
-
 
     public CyclesService(String path){
         this.path = path;
@@ -25,10 +30,14 @@ public class CyclesService {
         this.graph = new Graph<>(true);
         this.cycles = new ArrayList<>();
         this.tarjanTime = 0;
-        this.vertexes = new HashMap<>();
+        this.packages = new HashMap<>();
         this.numberOfCycles = 0;
     }
 
+
+    /**
+     * Run SAX (Simple API for XML) to process class dependencies.
+     */
     public void runSAX(){
         try{
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -40,25 +49,18 @@ public class CyclesService {
             saxParser.parse(inputFile, handler);
 
             this.dependencies = transform(handler.getClasses(), handler.getClass_pack());
-            this.graph = buildGraph(dependencies, true);
+            this.graph = buildGraph(dependencies);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void runTarjan(int limit, boolean isExactLimit){
-
-        long startTime = System.currentTimeMillis();
-
-        Tarjan tj = new Tarjan();
-
-        this.cycles = tj.findCycles(graph, limit, isExactLimit);
-        this.cycleCompressor = tj.getCycleCompressor();
-        this.numberOfCycles = tj.getNumberOfCycles();
-
-        this.tarjanTime = System.currentTimeMillis() - startTime;
-    }
-
+    /**
+     * Transform classes dependencies in packages dependencies.
+     * @param classes       Class dependencies.
+     * @param class_pack    Packages containers.
+     * @return              Packages dependencies.
+     */
     private static Map<String, Set<String>> transform(Map<String, Set<String>> classes, Map<String, String> class_pack) {
 
         Map<String, Set<String>> packDependencies = new HashMap<>();
@@ -83,8 +85,13 @@ public class CyclesService {
         return packDependencies;
     }
 
-    private Graph<String> buildGraph(Map<String, Set<String>> dependencies, boolean isDirected) {
-        Graph<String> graph = new Graph<>(isDirected);
+    /**
+     * Builds dependencies graph between packages since class dependencies.
+     * @param   dependencies    Class dependencies set.
+     * @return  {@code Graph} that represents dependencies graph between packages.
+     */
+    private Graph<String> buildGraph(Map<String, Set<String>> dependencies) {
+        Graph<String> graph = new Graph<>(true);
         long id = 0;
 
         Map<String, Vertex<String>> vertexes = new HashMap<>();
@@ -92,7 +99,7 @@ public class CyclesService {
         for (String packageName : dependencies.keySet()) {
             Vertex<String> vertex = new Vertex<>(id);
             vertex.setData(packageName);
-            this.vertexes.put(id, packageName);
+            this.packages.put(id, packageName);
             vertexes.put(packageName, vertex);
             id++;
         }
@@ -111,19 +118,94 @@ public class CyclesService {
         return graph;
     }
 
+    /**
+     * Run Tarjan Algorithm to get cycles from dependencies graph between packages.
+     * @param limit         Specifies nodes amount in the cycles.
+     * @param isExactLimit  Specifies if {@code limit} is exact (if isn't exact limit is interpreted as a maximum limit).
+     */
+    public void runTarjan(int limit, boolean isExactLimit, String package1, String package2){
+
+        long startTime = System.currentTimeMillis();
+
+        Tarjan tj = new Tarjan();
+
+        this.cycles = tj.findCycles(graph, limit, isExactLimit, package1, package2);
+        this.cycleCompressor = tj.getCycleCompressor();
+        this.numberOfCycles = tj.getNumberOfCycles();
+
+        this.tarjanTime = System.currentTimeMillis() - startTime;
+    }
+
+    /**
+     * To get compressed cycles.
+     * @return  Byte's arrays {@code List} with compressed information about exist cycles.
+     */
     public List<byte[]> getCycles(){
         return this.cycles;
     }
 
+    /**
+     * To get one decompressed cycle.
+     * @param   cycle Cycle to decompress.
+     * @return  {@code long}'s array with decompressed {@code cycle}.
+     */
     public long[] decompressCycle(byte[] cycle){
         return this.cycleCompressor.decompress(cycle);
     }
 
-    public HashMap<Long, String> getVertexes(){
-        return this.vertexes;
+    /**
+     * To get the packages of the packages dependencies graph.
+     * @return  {@code HashMap} with packages info. Each entry has package's ID as key and package name as value.
+     */
+    public HashMap<Long, String> getPackages(){
+        return this.packages;
     }
 
+    /**
+     * To get the run time of Tarjan algorithm.
+     * @return  {@code long} that represents time in seconds.
+     */
+    public long getTarjanTime(){
+        return tarjanTime;
+    }
+
+    /**
+     * To get the dependencies graph between packages.
+     * @return  {@code Graph} that represents dependencies graph between packages.
+     */
+    public Graph<String> getGraph(){
+        return this.graph;
+    }
+
+    /**
+     * To get path of the '.odem' file analyzed.
+     * @return  {@code String} that represents the file path.
+     */
+    public String getPath(){
+        return this.path;
+    }
+
+    /**
+     * To get the number of cycles.
+     * @return  Number of cycles.
+     */
     public int getNumberOfCycles(){
         return this.numberOfCycles;
+    }
+
+    /**
+     * To get the number of dependencies.
+     * @return  Number of dependencies.
+     */
+    public int getNumberOfDependencies(){
+        return this.graph.getEdges().size();
+    }
+
+    /**
+     * To get the number of packages.
+     * @return  Number of packages.
+     */
+    public int getNumberOfPackages(){
+        return this.graph.getVertexes().size();
     }
 }

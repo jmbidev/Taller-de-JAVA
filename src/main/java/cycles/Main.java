@@ -1,6 +1,7 @@
 package cycles;
 
 import cycles.controllers.ConsoleController;
+import cycles.utils.Printer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,28 +14,24 @@ public class Main extends Application {
     private static ConsoleController consoleController = new ConsoleController();
 
     public static void main(String[] args) {
-        printHeader();
-        String option = runExecutionOptions();
+
+        int option = 1;
+
+        if (args.length > 0)
+            if (args[0].equals("gui"))
+                option = 2;
 
         switch (option){
-            case "1":
+            case 1:
                 Main.consoleController.runConsole();
                 break;
 
-            case "2":
+            case 2:
                 launch(args);
-
+                break;
         }
-    }
 
-    private static void printHeader(){
-        System.out.println(
-            "TP Final TALLER DE PROGRAMACIÓN JAVA 2019\n" +
-            "\n" +
-            "Jeremías Brisuela  jere05.mdq@gmail.com\n" +
-            "Noelia Fluxá       noefluxa@gmail.com\n" +
-            "\n" +
-            "*****************************************\n");
+        System.exit(0);
     }
 
     private static String runExecutionOptions() {
@@ -51,14 +48,14 @@ public class Main extends Application {
 
     private static void printOptions(){
         System.out.println(
-                "Indique cómo desea ejecutar la aplicación:\n" +
+                ">> Indique cómo desea ejecutar la aplicación:\n" +
                 "   (1) Mediante CONSOLA\n" +
                 "   (2) Mediante INTERFAZ GRÁFICA\n");
     }
     private static String requestOption(){
         boolean isSelected = false;
         Scanner reader = new Scanner(System.in);
-        return  reader.next();
+        return reader.next();
     }
     private static boolean checkOptions(String option){
         boolean isSelected = false;
@@ -83,15 +80,11 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception{
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/sample.fxml"));
         Parent root = loader.load();
+        stage.setTitle("TP FINAL - Taller de Programación Java");
         stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.sizeToScene();
         stage.show();
-        /*
-        Parent root = FXMLLoader.load(this.getClass().getResource("sample.fxml"));
-        window.setTitle("TP FINAL - Taller de Programación Java");
-        window.setScene(new Scene(root));
-        window.setResizable(false);
-        window.sizeToScene();
-        window.show();
-         */
+
     }
 }
