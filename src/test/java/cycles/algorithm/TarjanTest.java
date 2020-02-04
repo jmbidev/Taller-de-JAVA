@@ -69,6 +69,17 @@ public class TarjanTest {
     }
 
     @Test
+    public void cyclesMaxCount() {
+        assertEquals(0, tarjan.findCycles(graph, 0, false, "", "").size());
+        assertEquals(0, tarjan.findCycles(graph, 1, false, "", "").size());
+        assertEquals(0, tarjan.findCycles(graph, 2, false, "", "").size());
+        assertEquals(2, tarjan.findCycles(graph, 3, false, "", "").size());
+        assertEquals(4, tarjan.findCycles(graph, 4, false, "", "").size());
+        assertEquals(5, tarjan.findCycles(graph, 5, false, "", "").size());
+        assertEquals(5, tarjan.findCycles(graph, 6, false, "", "").size());
+    }
+
+    @Test
     public void cyclesExactCount() {
         assertEquals(0, tarjan.findCycles(graph, 1, true, "", "").size());
         assertEquals(0, tarjan.findCycles(graph, 2, true, "", "").size());
@@ -79,7 +90,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween0_Count(){
+    public void cyclesBetween0_count() {
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "0", "1").size());
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "0", "2").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "0", "3").size());
@@ -98,7 +109,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween1_Count(){
+    public void cyclesBetween1_count() {
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "1", "0").size());
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "1", "2").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "1", "3").size());
@@ -117,7 +128,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween2_Count(){
+    public void cyclesBetween2_count() {
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "2", "0").size());
         assertEquals(4, tarjan.findCycles(graph, graph.getVertexes().size(), false, "2", "1").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "2", "3").size());
@@ -136,7 +147,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween3_Count(){
+    public void cyclesBetween3_count() {
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "3", "0").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "3", "1").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "3", "2").size());
@@ -155,7 +166,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween4_Count(){
+    public void cyclesBetween4_count() {
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "4", "0").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "4", "1").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "4", "2").size());
@@ -174,7 +185,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween5_Count(){
+    public void cyclesBetween5_count() {
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "5", "0").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "5", "1").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "5", "2").size());
@@ -193,7 +204,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween6_Count(){
+    public void cyclesBetween6_count() {
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "6", "0").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "6", "1").size());
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "6", "2").size());
@@ -212,7 +223,7 @@ public class TarjanTest {
     }
 
     @Test
-    public void cyclesBetween7_Count(){
+    public void cyclesBetween7_count() {
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "7", "0").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "7", "1").size());
         assertEquals(2, tarjan.findCycles(graph, graph.getVertexes().size(), false, "7", "2").size());
@@ -230,6 +241,41 @@ public class TarjanTest {
         assertEquals(0, tarjan.findCycles(graph, graph.getVertexes().size(), false, "6", "7").size());
     }
 
+    @Test
+    public void cyclesExactMax() {
+        Integer exact1 = tarjan.findCycles(graph, 1, true, "", "").size();
+        Integer exact2 = tarjan.findCycles(graph, 2, true, "", "").size();
+        Integer exact3 = tarjan.findCycles(graph, 3, true, "", "").size();
+        Integer exact4 = tarjan.findCycles(graph, 4, true, "", "").size();
+        Integer exact5 = tarjan.findCycles(graph, 5, true, "", "").size();
+
+        Integer max1 = tarjan.findCycles(graph, 1, false, "", "").size();
+        Integer max2 = tarjan.findCycles(graph, 2, false, "", "").size();
+        Integer max3 = tarjan.findCycles(graph, 3, false, "", "").size();
+        Integer max4 = tarjan.findCycles(graph, 4, false, "", "").size();
+        Integer max5 = tarjan.findCycles(graph, 5, false, "", "").size();
+
+        Integer sum1 = exact1;
+        Integer sum2 = sum1 + exact2;
+        Integer sum3 = sum2 + exact3;
+        Integer sum4 = sum3 + exact4;
+        Integer sum5 = sum4 + exact5;
+
+        assertEquals(sum1, max1);
+        assertEquals(sum2, max2);
+        assertEquals(sum3, max3);
+        assertEquals(sum4, max4);
+        assertEquals(sum5, max5);
+    }
+
+    @Test
+    public void cyclesExactBetween() {
+        assertEquals(0, tarjan.findCycles(graph, 1, true, "1", "2").size());
+        assertEquals(0, tarjan.findCycles(graph, 2, true, "1", "2").size());
+        assertEquals(1, tarjan.findCycles(graph, 3, true, "1", "2").size());
+        assertEquals(2, tarjan.findCycles(graph, 4, true, "1", "2").size());
+        assertEquals(1, tarjan.findCycles(graph, 5, true, "1", "2").size());
+    }
 
     @After
     public void after() {
